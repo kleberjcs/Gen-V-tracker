@@ -7,11 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        
         .dex-card { transition: all 0.2s ease; cursor: pointer; user-select: none; }
-        .dex-card:hover { transform: translateY(-2px); }
-        .status-uncaught { background-color: #1e293b; border: 2px solid #334155; opacity: 0.7; filter: grayscale(100%); }
+        .dex-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+        .status-uncaught { background-color: #1e293b; border: 2px solid #334155; filter: grayscale(100%) opacity(0.6); }
         .status-caught { background-color: #065f46; border: 2px solid #10b981; }
-        .status-pc { background-color: #1e3a8a; border: 2px solid #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        .status-pc { background-color: #1e3a8a; border: 2px solid #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
         
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
@@ -19,107 +20,91 @@
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
         .custom-checkbox {
-            appearance: none;
-            background-color: #1e293b;
-            margin: 0;
-            font: inherit;
-            color: currentColor;
-            width: 1.5em;
-            height: 1.5em;
-            border: 2px solid #475569;
-            border-radius: 0.25em;
-            display: grid;
-            place-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
+            appearance: none; background-color: #1e293b; margin: 0; font: inherit; color: currentColor;
+            width: 1.5em; height: 1.5em; border: 2px solid #475569; border-radius: 0.3em;
+            display: grid; place-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
         }
-
         .custom-checkbox::before {
-            content: "";
-            width: 0.8em;
-            height: 0.8em;
-            transform: scale(0);
-            transition: 120ms transform ease-in-out;
-            box-shadow: inset 1em 1em white;
-            background-color: white;
-            transform-origin: center;
+            content: ""; width: 0.85em; height: 0.85em; transform: scale(0); transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em white; background-color: white; transform-origin: center;
             clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
         }
-
         .custom-checkbox:checked { background-color: #3b82f6; border-color: #3b82f6; }
         .custom-checkbox:checked::before { transform: scale(1); }
 
-        .progress-bar-container { background-color: #1e293b; border-radius: 9999px; overflow: hidden; height: 1rem; width: 100%; border: 1px solid #334155;}
-        .progress-bar-fill { background-color: #3b82f6; height: 100%; transition: width 0.3s ease; }
+        .progress-bar-container { background-color: #1e293b; border-radius: 9999px; overflow: hidden; height: 1.25rem; width: 100%; border: 1px solid #334155; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);}
+        .progress-bar-fill { background-color: #3b82f6; height: 100%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent); background-size: 1rem 1rem; }
+        
+        .pixel-art { image-rendering: pixelated; }
     </style>
 </head>
-<body class="h-screen flex overflow-hidden flex-col md:flex-row">
+<body class="h-screen flex overflow-hidden flex-col md:flex-row text-slate-200 selection:bg-blue-500/30">
 
-    <aside class="w-full md:w-72 bg-slate-900 border-b md:border-r md:border-b-0 border-slate-700 flex flex-col flex-shrink-0 z-10">
-        <div class="p-6">
-            <h1 class="text-2xl font-bold text-blue-400 drop-shadow-md">White 2 Tracker</h1>
-            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wide font-semibold">Living Dex Gen 5 - OT Only</p>
+    <aside class="w-full md:w-80 bg-slate-900 border-b md:border-r md:border-b-0 border-slate-700 flex flex-col flex-shrink-0 z-20 shadow-xl">
+        <div class="p-6 pb-4 bg-gradient-to-b from-slate-800 to-slate-900">
+            <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 drop-shadow-sm tracking-tight">White 2 Tracker</h1>
+            <p class="text-[11px] text-slate-400 mt-1 uppercase tracking-widest font-bold">Living Dex Gen 5 • OT Only</p>
         </div>
         
-        <div class="px-4 mb-4">
-            <p class="text-xs text-slate-400 mb-1 flex justify-between">
-                <span>Progresso Pokédex</span>
-                <span id="dex-pct-text">0%</span>
-            </p>
-            <div class="progress-bar-container">
+        <div class="px-6 mb-6">
+            <div class="flex justify-between items-end mb-2">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Progresso Pokédex</span>
+                <span id="dex-pct-text" class="text-sm font-bold text-blue-400 bg-blue-900/30 px-2 py-0.5 rounded">0%</span>
+            </div>
+            <div class="progress-bar-container relative">
                 <div id="dex-progress-bar" class="progress-bar-fill w-0"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white drop-shadow-md" id="dex-counter-text">0 / 156</div>
             </div>
         </div>
 
-        <nav class="flex-1 px-4 space-y-2 overflow-y-auto mt-4">
-            <button onclick="switchTab('history')" id="btn-history" class="w-full text-left px-4 py-3 rounded-lg bg-slate-800 text-white font-medium shadow-sm transition flex items-center justify-between group hover:bg-slate-700">
-                <span>Roteiro de Jogo</span>
-                <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300 group-hover:bg-slate-600" id="hist-pct-text">0%</span>
+        <nav class="flex-1 px-4 space-y-2 overflow-y-auto">
+            <button onclick="switchTab('history')" id="btn-history" class="w-full text-left px-4 py-3 rounded-xl bg-blue-600/10 text-blue-400 font-semibold border border-blue-500/20 shadow-sm transition flex items-center justify-between group hover:bg-blue-600/20">
+                <span class="flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg> Roteiro Otimizado</span>
+                <span class="text-[10px] bg-slate-800 px-2 py-1 rounded-md text-slate-300 font-mono" id="hist-pct-text">0%</span>
             </button>
-            <button onclick="switchTab('dex')" id="btn-dex" class="w-full text-left px-4 py-3 rounded-lg text-slate-400 font-medium transition hover:bg-slate-800 hover:text-white flex items-center">
-                Living Dex Gen 5
+            <button onclick="switchTab('dex')" id="btn-dex" class="w-full text-left px-4 py-3 rounded-xl text-slate-400 font-medium border border-transparent transition hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> Living Dex (156)
             </button>
         </nav>
         
-        <div class="p-4 border-t border-slate-700 mt-auto">
-            <button id="btn-reset" onclick="handleReset()" class="w-full text-sm py-2.5 text-red-400 font-semibold border border-red-900/50 bg-red-900/10 rounded-lg hover:bg-red-900/30 transition">Zerar Progresso</button>
+        <div class="p-6 border-t border-slate-800 bg-slate-900/50 mt-auto">
+            <button id="btn-reset" onclick="handleReset()" class="w-full text-sm py-3 text-slate-400 font-semibold border border-slate-700 bg-slate-800 rounded-xl hover:bg-red-900/30 hover:text-red-400 hover:border-red-900/50 transition duration-300">Apagar Todo o Progresso</button>
         </div>
     </aside>
 
-    <main class="flex-1 overflow-y-auto bg-slate-950 p-4 md:p-8 relative">
+    <main class="flex-1 overflow-y-auto bg-[#0a0f18] p-4 md:p-8 relative scroll-smooth">
         
-        <!-- Tab: Roteiro -->
-        <section id="tab-history" class="max-w-4xl mx-auto pb-20">
-            <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-slate-700 pb-4 mb-6">
-                <div>
-                    <h2 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">Guia de Captura Otimizado</h2>
-                    <p class="text-sm text-slate-400 mt-1">Siga os passos para capturar apenas o necessário, evitando evoluir Pokémon que podem ser pegos prontos mais tarde.</p>
-                </div>
+        <!-- Aba: Roteiro -->
+        <section id="tab-history" class="max-w-4xl mx-auto pb-24">
+            <div class="mb-8">
+                <h2 class="text-3xl font-black text-white mb-2 tracking-tight">Guia de Captura Otimizado</h2>
+                <p class="text-slate-400 leading-relaxed text-sm">Siga os passos exatos para focar apenas nas capturas necessárias. Cards maiores mostram exatamente quem você deve procurar no matinho. Pegue-os para evitar farmar XP de evolução à toa!</p>
             </div>
-            <div id="history-content" class="space-y-8">
+            <div id="history-content" class="space-y-10">
                 <!-- Conteúdo Injetado via JS -->
             </div>
         </section>
 
-        <section id="tab-dex" class="hidden max-w-6xl mx-auto pb-20">
-            <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-slate-700 pb-4 mb-6">
+        <!-- Aba: Dex -->
+        <section id="tab-dex" class="hidden max-w-[1400px] mx-auto pb-24">
+            <div class="flex flex-col xl:flex-row xl:items-end justify-between border-b border-slate-800 pb-6 mb-8 gap-4">
                 <div>
-                    <h2 class="text-3xl font-bold text-white">Living Dex de Unova</h2>
-                    <p class="text-sm text-slate-400 mt-1">As 156 espécies da Geração 5 (Victini a Genesect).</p>
+                    <h2 class="text-3xl font-black text-white mb-2 tracking-tight">Living Dex de Unova</h2>
+                    <p class="text-slate-400 text-sm">Contém as 156 espécies exclusivas da Geração 5 (Victini a Genesect). Clique nos ícones para alterar o status.</p>
                 </div>
-                <div class="flex flex-wrap gap-3 text-xs md:text-sm mt-4 md:mt-0 font-medium">
-                    <div class="flex items-center bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700"><span class="w-3 h-3 rounded-full bg-slate-600 mr-2 shadow-inner"></span>Falta</div>
-                    <div class="flex items-center bg-emerald-900/40 px-3 py-1.5 rounded-full border border-emerald-800/50"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-2 shadow-inner"></span>Capturado</div>
-                    <div class="flex items-center bg-blue-900/40 px-3 py-1.5 rounded-full border border-blue-800/50"><span class="w-3 h-3 rounded-full bg-blue-500 mr-2 shadow-[0_0_8px_#3b82f6]"></span>No PC (Seu OT)</div>
+                <div class="flex flex-wrap gap-3 text-xs font-semibold">
+                    <div class="flex items-center bg-slate-900 px-4 py-2 rounded-lg border border-slate-700 shadow-sm"><span class="w-3.5 h-3.5 rounded-full bg-slate-600 mr-2 border border-slate-500"></span>Falta</div>
+                    <div class="flex items-center bg-emerald-900/20 px-4 py-2 rounded-lg border border-emerald-800/40 shadow-sm text-emerald-100"><span class="w-3.5 h-3.5 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_#10b981]"></span>Capturado</div>
+                    <div class="flex items-center bg-blue-900/20 px-4 py-2 rounded-lg border border-blue-800/40 shadow-sm text-blue-100"><span class="w-3.5 h-3.5 rounded-full bg-blue-500 mr-2 shadow-[0_0_10px_#3b82f6]"></span>No PC (OT Final)</div>
                 </div>
             </div>
             
-            <div class="bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700 text-sm text-slate-300">
-                <p><strong>Regra de Ouro (OT):</strong> Para a aba "No PC" valer, o Pokémon precisa ter sido chocado de um ovo seu ou capturado por você. Trocas de NPC (como o Cottonee) devem ir pro Day Care com Ditto depois para gerar um ovo com seu nome!</p>
+            <div class="bg-blue-900/10 rounded-2xl p-5 mb-8 border border-blue-800/30 text-sm text-blue-200/80 leading-relaxed flex gap-4 items-start shadow-inner">
+                <svg class="w-6 h-6 flex-shrink-0 text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <p><strong>A Regra de Ouro (Original Trainer):</strong> Para a aba "No PC" valer de verdade para o desafio, o Pokémon precisa ter sido capturado ou chocado por você (ter o seu OT). Trocas com NPCs (como o Cottonee na Rota 4) devem ser marcadas como "Capturado" e levadas ao Day Care com um Ditto no post-game para chocar um ovo com o seu nome!</p>
             </div>
 
-            <div id="dex-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-3">
+            <div id="dex-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
                 <!-- Conteúdo Injetado via JS -->
             </div>
         </section>
@@ -127,73 +112,77 @@
     </main>
 
     <script>
-        const pokeApi = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/";
-        
+        // Função Helper para criar os "Cards de Captura" grandões no meio do texto
+        const p = (id, name) => {
+            const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/${id}.png`;
+            return `<span class="inline-block mx-1 align-middle bg-[#162032] border border-slate-600 rounded-lg shadow-lg overflow-hidden" style="width: 72px; text-align: center; line-height: 1;">
+                <img src="${spriteUrl}" class="pixel-art" style="width: 60px; height: 60px; margin: 0 auto; display: block;" alt="${name}">
+                <span class="block bg-slate-900 text-slate-200 text-[10px] font-black uppercase tracking-tighter py-1 border-t border-slate-700">${name}</span>
+            </span>`;
+        };
+
         const historyData = [
             {
-                area: "Aspertia City (Início da Jornada)",
-                trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/bianca-gen5bw2.png",
-                desc: "Fale com Bianca no mirante norte para pegar sua Pokédex e seu primeiro parceiro.",
+                area: "Aspertia City e as Primeiras Rotas",
+                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/b/bc/Aspertia_City_B2W2.png&w=800&q=70&output=webp",
+                trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/bianca.png",
+                desc: "Sua cidade natal. O foco inicial é formar uma equipe base forte o suficiente para o primeiro ginásio e capturar as espécies exclusivas dos primeiros matinhos.",
                 steps: [
-                    { id: "h1", text: "<strong>A Escolha:</strong> Escolha <img src='"+pokeApi+"498.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Tepig</strong>. Ele será crucial para os ginásios 2 e 3. Guarde-o no Slot de Up (Time ativo) até o nível 36, quando vira Emboar." },
-                    { id: "h2", text: "Derrote seu Rival (Hugh) na primeira batalha." },
-                    { id: "h3", text: "Vá ao Centro Pokémon com a Bianca, ganhe Pokébolas e receba os Running Shoes da sua mãe para correr." }
+                    { id: "h1", text: "<strong>A Escolha (Nível 5):</strong> Escolha " + p(498, "Tepig") + ". Ele será crucial pois evolui para Fogo/Lutador (Pignite) no nível 17, tipagem perfeita para os Ginásios 2 e 3. Coloque-o no Slot de Up." },
+                    { id: "h2", text: "No mirante, derrote seu Rival (Hugh) na primeira batalha." },
+                    { id: "h3", text: "<strong>Rota 19 (Grama):</strong> Capture " + p(504, "Patrat") + ". <strong>NÃO upe ele!</strong> Mande direto para o PC da Living Dex. (Watchog, a evolução, será capturada facilmente em matinhos que balançam depois)." },
+                    { id: "h4", text: "<strong>Rota 19 (Grama):</strong> Capture " + p(509, "Purrloin") + ". Coloque-o no seu time principal. Os ataques de Sand Attack/Growl dele vão te salvar no 1º Ginásio. <strong>NÃO upe para Liepard</strong> (pegaremos Liepard solto mais tarde)." },
+                    { id: "h5", text: "<strong>Rota 20 (Grama):</strong> Capture " + p(519, "Pidove") + " e " + p(540, "Sewaddle") + ". Envie ambos para o PC. As evoluções deles aparecem soltas no meio do jogo." }
                 ]
             },
             {
-                area: "Rotas 19 e 20",
-                trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/hugh.png",
-                desc: "Os primeiros matinhos. Capture as formas base, mas não gaste tempo upando se a evolução for fácil de achar solta depois.",
-                steps: [
-                    { id: "h4", text: "<strong>Rota 19:</strong> Capture UM <img src='"+pokeApi+"504.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Patrat</strong>. Mande-o direto pro PC (Watchog aparece selvagem mais tarde)." },
-                    { id: "h5", text: "<strong>Rota 19:</strong> Capture UM <img src='"+pokeApi+"509.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Purrloin</strong>. Coloque no time. Os ataques de diminuir precisão dele serão úteis no 1º Ginásio. Não upe para Liepard." },
-                    { id: "h6", text: "<strong>Rota 20:</strong> Capture UM <img src='"+pokeApi+"519.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Pidove</strong>. Mande pro PC. (Tranquill e Unfezant achamos soltos depois)." },
-                    { id: "h7", text: "<strong>Rota 20:</strong> Capture UM <img src='"+pokeApi+"540.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Sewaddle</strong>. Mande pro PC." }
-                ]
-            },
-            {
-                area: "Floccesy Ranch & 1º Ginásio",
+                area: "Floccesy Ranch e 1º Ginásio",
+                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/f/f3/Floccesy_Ranch_B2W2.png&w=800&q=70&output=webp",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/cheren-gen5bw2.png",
-                desc: "Ajude os donos do rancho a achar o Herdier e prepare-se para enfrentar Cheren.",
+                desc: "Ajude os fazendeiros e enfrente Cheren, o novo líder especialista no tipo Normal.",
                 steps: [
-                    { id: "h8", text: "<strong>Rancho:</strong> Capture UM <img src='"+pokeApi+"506.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Lillipup</strong>. Mande pro PC. Seus status são bons, mas Herdier/Stoutland são muito comuns nas próximas rotas, não gaste tempo upando-o." },
-                    { id: "h9", text: "Encontre o membro da Equipe Plasma escondido nos fundos e salve o Herdier." },
-                    { id: "h10", text: "<strong>Ginásio 1 (Aspertia):</strong> Volte para sua cidade natal. O ginásio fica na Escola. Enfrente Cheren (Normal). Abra a luta com Purrloin usando Sand Attack/Growl para cegar o oponente. Finalize com Tepig." }
+                    { id: "h6", text: "<strong>Rancho:</strong> Capture " + p(506, "Lillipup") + ". Coloque-o no seu time apenas por seus bons status, mas <strong>NÃO foque em evoluí-lo</strong>. Herdier e Stoutland são garantidos nas gramas que balançam depois." },
+                    { id: "h7", text: "Encontre o membro escondido da Equipe Plasma nos fundos do rancho para salvar o Herdier e liberar o Ginásio." },
+                    { id: "h8", text: "<strong>Ginásio 1 (Aspertia):</strong> Volte para a cidade inicial. O Ginásio fica nos fundos da Escola. Cheren usa Normal. Abra a luta com Purrloin usando Sand Attack para cegar o oponente e finalize com os golpes físicos do Tepig. <strong>Insígnia Básica Obtida!</strong>" }
                 ]
             },
             {
-                area: "Virbank City e o Complexo",
+                area: "Virbank City e Complexo",
+                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/1/18/Virbank_City_B2W2.png&w=800&q=70&output=webp",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/roxie.png",
-                desc: "A cidade industrial tóxica de Roxie. Cuidado com o envenenamento.",
+                desc: "Uma cidade portuária industrial de atmosfera tóxica. Onde começamos o farm de Audinos.",
                 steps: [
-                    { id: "h11", text: "A Grama que Balança (Rustling Grass) está ativa. Ande fora da grama até uma balançar. Capture UM <img src='"+pokeApi+"531.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Audino</strong>." },
-                    { id: "h12", text: "Derrotar Audinos é a melhor forma de ganhar XP rápido no jogo! Upe seu Tepig até o Nível 17 aqui para ele evoluir para Pignite (ganha golpes lutadores)." },
-                    { id: "h13", text: "<strong>Complexo:</strong> Capture UM <img src='"+pokeApi+"543.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Venipede</strong>. Mande pro PC (Whirlipede achamos na Lostlorn Forest)." },
-                    { id: "h14", text: "<strong>Ginásio 2 (Virbank):</strong> Enfrente Roxie (Veneno). Pignite no nível 17 varre todo o time dela facilmente com Flame Charge. Ganhe a Toxic Badge." },
-                    { id: "h15", text: "Vá ao Pokéstar Studios (obrigatório ao norte) e grave 1 filme para o capitão do barco aceitar te levar para Castelia." }
+                    { id: "h9", text: "<strong>Mecânica Desbloqueada (Rustling Grass):</strong> Com 1 Insígnia, os matinhos agora podem chacoalhar! Corra fora da grama até um matinho tremer. Entre nele e capture " + p(531, "Audino") + "." },
+                    { id: "h10", text: "<strong>Otimização de Nível:</strong> Derrotar Audinos nos matinhos que balançam dá EXP absurda. Upe seu Tepig até o Nível 17 aqui. Ele vai evoluir para " + p(499, "Pignite") + " e aprender <em>Arm Thrust</em> (Lutador)." },
+                    { id: "h11", text: "<strong>Complexo:</strong> Capture " + p(543, "Venipede") + ". Mande pro PC. (Whirlipede pegamos na floresta adiante)." },
+                    { id: "h12", text: "<strong>Ginásio 2 (Virbank):</strong> No clube de Rock subterrâneo, enfrente Roxie (Veneno). Com seu Pignite lutador/fogo nv. 17, a batalha é um massacre rápido. <strong>Insígnia Tóxica Obtida!</strong>" },
+                    { id: "h13", text: "Vá ao Pokéstar Studios (norte da cidade), participe da filmagem de 1 filme obrigatório para o Capitão do navio aceitar te levar." }
                 ]
             },
             {
-                area: "Castelia City & Esgotos",
+                area: "Castelia City e Esgotos",
+                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/6/68/Castelia_City_B2W2.png&w=800&q=70&output=webp",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/burgh.png",
-                desc: "A metrópole de Unova. Muitas capturas cruciais acontecem aqui.",
+                desc: "A metrópole de Unova guarda capturas super importantes e um Bypass de exclusividade.",
                 steps: [
-                    { id: "h16", text: "Nos esgotos, Hugh batalha ao seu lado e cura seus Pokémon após cada luta. Aproveite para farmar XP livre." },
-                    { id: "h17", text: "<strong>Esgotos:</strong> Capture UM <img src='"+pokeApi+"559.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Scraggy</strong>. Excelente lutador, coloque no Slot de Up (Time principal). Ele só evolui no Nível 39." },
-                    { id: "h18", text: "<strong>Parque Isolado:</strong> Acessível por uma escada nos esgotos. Capture DOIS <img src='"+pokeApi+"548.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Petilil</strong>. Um vai pro PC, o outro fica na sua mochila para uma troca logo adiante." },
-                    { id: "h19", text: "<strong>Ginásio 3 (Castelia):</strong> Enfrente Burgh (Inseto). Pignite aniquila Swadloon e Leavanny com fogo. O Dwebble toma dano normal, use golpes lutadores. Receba a Insect Badge." }
+                    { id: "h14", text: "Nos esgotos, o Rival batalha em dupla com você e cura seu time de graça toda hora! Aproveite para farmar XP seguro." },
+                    { id: "h15", text: "<strong>Esgotos:</strong> Capture " + p(559, "Scraggy") + ". Ele é excelente. Coloque-o direto no time principal. (Evolui para Scrafty apenas no nível 39)." },
+                    { id: "h16", text: "<strong>Castelia Park (Suba a escada nos esgotos):</strong> Capture DOIS " + p(548, "Petilil") + ". Um vai para a Living Dex, e o outro <strong>guarde na mochila</strong>, usaremos ele na próxima rota!" },
+                    { id: "h17", text: "<strong>Ginásio 3 (Castelia):</strong> Burgh usa Insetos. Pignite destrói Swadloon e Leavanny. O Dwebble (Inseto/Pedra) toma dano letal dos ataques Lutadores do Pignite. <strong>Insígnia Inseto Obtida!</strong>" }
                 ]
             },
             {
-                area: "A Rota 4 e o Bypass do Exclusivo",
+                area: "Rota 4 e Nimbasa City",
+                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/6/6f/Nimbasa_City_B2W2.png&w=800&q=70&output=webp",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/elesa-gen5bw2.png",
-                desc: "O Deserto guarda grandes oportunidades e a ponte para o próximo Ginásio Elétrico.",
+                desc: "O deserto oferece a solução para um Pokémon exclusivo do Black 2, e o Ginásio Elétrico.",
                 steps: [
-                    { id: "h20", text: "<strong>O BYPASS:</strong> Cottonee é exclusivo do Black 2, MAS em um dos prédios da Rota 4, troque um Petilil com o NPC para ganhar um <img src='"+pokeApi+"546.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Cottonee</strong>! Pegue o item dele e guarde-o pro Breeding (para tirar o OT do NPC)." },
-                    { id: "h21", text: "<strong>Rota 4:</strong> Capture UM <img src='"+pokeApi+"551.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Sandile</strong>. Essencial: coloque direto no time, a imunidade elétrica dele vencerá Elesa." },
-                    { id: "h22", text: "<strong>Deserto / Rota 4:</strong> Capture <img src='"+pokeApi+"554.png' class='inline h-6'> Darumaka, <img src='"+pokeApi+"568.png' class='inline h-6'> Trubbish, <img src='"+pokeApi+"562.png' class='inline h-6'> Yamask, <img src='"+pokeApi+"556.png' class='inline h-6'> Maractus e <img src='"+pokeApi+"561.png' class='inline h-6'> Sigilyph. Maractus e Sigilyph não evoluem, já marque 'PC' na Dex." },
-                    { id: "h23", text: "<strong>Nimbasa City:</strong> Batalhe nos Estádios de esportes. Farme XP para Sandile evoluir para Krokorok (Nível 29)." },
-                    { id: "h24", text: "<strong>Ginásio 4 (Nimbasa):</strong> Elesa (Elétrico). Krokorok é imune aos Volt Switches cruéis dela. Use Dig (pego na Rota 4) para vencer a Bolt Badge." }
+                    { id: "h18", text: "<strong>BYPASS DO EXCLUSIVO:</strong> Cottonee é exclusivo do Black 2. Porém, num dos prédios da Rota 4, troque aquele Petilil extra com o NPC <em>Youngster Cotton</em> para ganhar um " + p(546, "Cottonee") + "!" },
+                    { id: "h19", text: "Marque o Cottonee como 'Capturado' (verde). Lembre-se: depois de vencer o jogo, cruze ele com Ditto para obter um com seu OT, assim ele ganha o selo Azul!" },
+                    { id: "h20", text: "<strong>Rota 4 / Deserto:</strong> Capture " + p(551, "Sandile") + ". Ele é <strong>OBRIGATÓRIO</strong> para o próximo ginásio. Coloque no time." },
+                    { id: "h21", text: "<strong>Rota 4 / Deserto:</strong> Capture e mande pro PC: " + p(554, "Darumaka") + ", " + p(568, "Trubbish") + ", " + p(562, "Yamask") + ", " + p(556, "Maractus") + " e " + p(561, "Sigilyph") + "." },
+                    { id: "h22", text: "Em Nimbasa, farme batalhas nos estádios de esportes até o Sandile evoluir para " + p(552, "Krokorok") + " (Nível 29)." },
+                    { id: "h23", text: "<strong>Ginásio 4 (Nimbasa):</strong> Elesa usa Elétricos muito rápidos. Krokorok é imune a eletricidade! Equipe o TM Dig nele (achado na Rota 4) e cave até a vitória. <strong>Insígnia Voltagem Obtida!</strong>" }
                 ]
             }
         ];
@@ -239,36 +228,41 @@
 
             historyData.forEach((section) => {
                 const secDiv = document.createElement('div');
-                secDiv.className = 'bg-slate-900 rounded-xl overflow-hidden border border-slate-800 shadow-lg';
+                secDiv.className = 'bg-slate-900/80 rounded-2xl border border-slate-800 shadow-xl overflow-hidden backdrop-blur-sm';
                 
-                // Novo cabeçalho: gradiente CSS escuro com o Sprite oficial
+                // Cabeçalho com Sprite e Imagem de fundo do Jogo
                 const header = document.createElement('div');
-                header.className = 'bg-gradient-to-r from-slate-900 to-slate-800 p-5 flex items-center justify-between border-b border-slate-800';
+                header.className = 'relative p-6 flex flex-col justify-center min-h-[160px] border-b border-slate-800 bg-black/60 overflow-hidden';
                 
-                let spriteHtml = section.trainerSprite ? `<img src="${section.trainerSprite}" alt="Trainer Sprite" class="h-20 w-auto object-contain drop-shadow-lg opacity-90">` : '';
+                let bgHtml = section.bgImg ? `<img src="${section.bgImg}" class="absolute inset-0 w-full h-full object-cover opacity-[0.25]" style="mix-blend-mode: screen; filter: saturate(1.5);">` : '';
                 
                 header.innerHTML = `
-                    <div class="flex-1 pr-4">
-                        <h3 class="text-xl font-bold text-white mb-1 tracking-tight">${section.area}</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">${section.desc}</p>
-                    </div>
-                    <div class="flex-shrink-0">
-                        ${spriteHtml}
+                    ${bgHtml}
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent"></div>
+                    <div class="relative z-10 flex items-center justify-between w-full h-full">
+                        <div class="pr-6 max-w-[70%]">
+                            <h3 class="text-2xl font-black text-white mb-2 tracking-tight drop-shadow-md">${section.area}</h3>
+                            <p class="text-sm text-slate-300 leading-relaxed font-medium drop-shadow">${section.desc}</p>
+                        </div>
+                        <div class="flex-shrink-0 mr-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                            <img src="${section.trainerSprite}" alt="Trainer Sprite" class="h-28 w-auto object-contain pixel-art" onerror="this.style.display='none'">
+                        </div>
                     </div>
                 `;
                 
                 const stepsContainer = document.createElement('div');
-                stepsContainer.className = 'p-5 space-y-4';
+                stepsContainer.className = 'p-6 space-y-3';
 
                 section.steps.forEach(step => {
                     const isChecked = historyState[step.id] ? 'checked' : '';
-                    const textClass = historyState[step.id] ? 'text-slate-500 line-through opacity-70' : 'text-slate-200';
+                    const textClass = historyState[step.id] ? 'text-slate-500 line-through opacity-60' : 'text-slate-200';
+                    const bgClass = historyState[step.id] ? 'bg-slate-800/30 border-slate-800' : 'bg-slate-800/60 border-slate-700/50 hover:bg-slate-700/50 hover:border-slate-600';
                     
                     const stepDiv = document.createElement('label');
-                    stepDiv.className = 'flex items-start gap-4 cursor-pointer group p-2 hover:bg-slate-800/50 rounded-lg transition-colors';
+                    stepDiv.className = `flex items-start gap-4 cursor-pointer group p-4 rounded-xl border transition-all duration-200 ${bgClass}`;
                     stepDiv.innerHTML = `
-                        <input type="checkbox" class="custom-checkbox mt-0.5" ${isChecked} onchange="toggleHistory('${step.id}')">
-                        <span class="text-sm leading-relaxed transition-colors duration-200 ${textClass}">${step.text}</span>
+                        <input type="checkbox" class="custom-checkbox mt-0.5 shadow-inner" ${isChecked} onchange="toggleHistory('${step.id}')">
+                        <span class="text-[15px] leading-relaxed transition-all duration-300 ${textClass}">${step.text}</span>
                     `;
                     stepsContainer.appendChild(stepDiv);
                 });
@@ -285,12 +279,11 @@
             
             dexData.forEach(pokemon => {
                 const state = dexState[pokemon.id] || 0;
-                let bgClass = 'status-uncaught text-slate-500';
+                let bgClass = 'status-uncaught text-slate-400';
                 
-                if(state === 1) bgClass = 'status-caught text-emerald-100'; 
-                else if(state === 2) bgClass = 'status-pc text-blue-50 font-medium'; 
+                if(state === 1) bgClass = 'status-caught text-emerald-100 font-medium'; 
+                else if(state === 2) bgClass = 'status-pc text-blue-50 font-bold'; 
 
-                // Imagens dos Pokémon agora puxam direto da PokeAPI oficial, 100% à prova de falhas.
                 const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/${pokemon.id}.png`;
 
                 const div = document.createElement('div');
@@ -298,11 +291,11 @@
                 div.onclick = () => toggleDex(pokemon.id);
                 
                 div.innerHTML = `
-                    <div class="text-[10px] font-mono tracking-wider opacity-70 mb-1">#${pokemon.id}</div>
+                    <div class="text-[10px] font-mono tracking-wider opacity-60 mb-1 w-full text-left leading-none">#${pokemon.id}</div>
                     <div class="relative w-14 h-14 flex items-center justify-center mb-1">
-                        <img src="${spriteUrl}" class="max-w-full max-h-full object-contain drop-shadow-md" alt="${pokemon.name}" loading="lazy" onerror="this.style.display='none'">
+                        <img src="${spriteUrl}" class="max-w-full max-h-full object-contain pixel-art drop-shadow-md" alt="${pokemon.name}" loading="lazy">
                     </div>
-                    <div class="text-xs tracking-tight truncate w-full">${pokemon.name}</div>
+                    <div class="text-xs tracking-tight truncate w-full mt-auto">${pokemon.name}</div>
                 `;
                 container.appendChild(div);
             });
@@ -332,7 +325,8 @@
             });
             
             const dexPct = totalDex > 0 ? Math.round((dexFinished / totalDex) * 100) : 0;
-            document.getElementById('dex-pct-text').innerText = `${dexFinished}/${totalDex} (${dexPct}%)`;
+            document.getElementById('dex-pct-text').innerText = `${dexPct}%`;
+            document.getElementById('dex-counter-text').innerText = `${dexFinished} / ${totalDex}`;
             document.getElementById('dex-progress-bar').style.width = `${dexPct}%`;
 
             let histChecked = 0;
@@ -353,36 +347,37 @@
             const tabHist = document.getElementById('tab-history');
             const tabDex = document.getElementById('tab-dex');
 
+            const activeClass = ['bg-blue-600/10', 'text-blue-400', 'border-blue-500/20'];
+            const inactiveClass = ['bg-transparent', 'text-slate-400', 'border-transparent'];
+
             if(tab === 'history') {
                 tabHist.classList.remove('hidden');
                 tabDex.classList.add('hidden');
-                btnHist.classList.replace('bg-transparent', 'bg-slate-800');
-                btnHist.classList.replace('text-slate-400', 'text-white');
-                btnDex.classList.replace('bg-slate-800', 'bg-transparent');
-                btnDex.classList.replace('text-white', 'text-slate-400');
+                btnHist.classList.add(...activeClass); btnHist.classList.remove(...inactiveClass);
+                btnDex.classList.add(...inactiveClass); btnDex.classList.remove(...activeClass);
             } else {
                 tabDex.classList.remove('hidden');
                 tabHist.classList.add('hidden');
-                btnDex.classList.replace('bg-transparent', 'bg-slate-800');
-                btnDex.classList.replace('text-slate-400', 'text-white');
-                btnHist.classList.replace('bg-slate-800', 'bg-transparent');
-                btnHist.classList.replace('text-white', 'text-slate-400');
+                btnDex.classList.add(...activeClass); btnDex.classList.remove(...inactiveClass);
+                btnHist.classList.add(...inactiveClass); btnHist.classList.remove(...activeClass);
             }
         }
 
         function handleReset() {
             const btn = document.getElementById('btn-reset');
             if (resetClicks === 0) {
-                btn.innerText = "Tem certeza? Clique de novo.";
-                btn.classList.replace('bg-red-900/10', 'bg-red-600');
-                btn.classList.replace('text-red-400', 'text-white');
+                btn.innerText = "Tem certeza? Clique de novo para apagar!";
+                btn.classList.replace('bg-slate-800', 'bg-red-600');
+                btn.classList.replace('text-slate-400', 'text-white');
                 resetClicks = 1;
                 
                 setTimeout(() => {
-                    btn.innerText = "Zerar Progresso";
-                    btn.classList.replace('bg-red-600', 'bg-red-900/10');
-                    btn.classList.replace('text-white', 'text-red-400');
-                    resetClicks = 0;
+                    if (resetClicks !== 0) {
+                        btn.innerText = "Apagar Todo o Progresso";
+                        btn.classList.replace('bg-red-600', 'bg-slate-800');
+                        btn.classList.replace('text-white', 'text-slate-400');
+                        resetClicks = 0;
+                    }
                 }, 3000);
             } else {
                 localStorage.removeItem('w2_history');
@@ -393,13 +388,14 @@
                 renderDex();
                 updateProgress();
                 
-                btn.innerText = "Resetado!";
+                btn.innerText = "Progresso Apagado!";
+                btn.classList.replace('bg-red-600', 'bg-emerald-600');
                 setTimeout(() => {
-                    btn.innerText = "Zerar Progresso";
-                    btn.classList.replace('bg-red-600', 'bg-red-900/10');
-                    btn.classList.replace('text-white', 'text-red-400');
+                    btn.innerText = "Apagar Todo o Progresso";
+                    btn.classList.replace('bg-emerald-600', 'bg-slate-800');
+                    btn.classList.replace('text-white', 'text-slate-400');
                     resetClicks = 0;
-                }, 1000);
+                }, 2000);
             }
         }
     </script>
