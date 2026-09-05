@@ -129,7 +129,7 @@
         const historyData = [
             {
                 area: "Aspertia City e Rotas Iniciais",
-                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/b/bc/Aspertia_City_B2W2.png&w=800&q=70&output=webp",
+                bgImg: "archives.bulbagarden.net/media/upload/b/bc/Aspertia_City_B2W2.png",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/cheren-gen5bw2.png",
                 desc: "Cidade natal! Pegue seu inicial, conheça o rival Hugh e enfrente Cheren no 1º Ginásio (Normal).",
                 steps: [
@@ -142,7 +142,7 @@
             },
             {
                 area: "Virbank City e Castelia City",
-                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/1/18/Virbank_City_B2W2.png&w=800&q=70&output=webp",
+                bgImg: "archives.bulbagarden.net/media/upload/1/18/Virbank_City_B2W2.png",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/roxie.png",
                 desc: "Zona portuária e a grande metrópole. Enfrente Roxie (Veneno) e Burgh (Insetos).",
                 steps: [
@@ -156,7 +156,7 @@
             },
             {
                 area: "Rota 4, Deserto e Nimbasa City",
-                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/6/6f/Nimbasa_City_B2W2.png&w=800&q=70&output=webp",
+                bgImg: "archives.bulbagarden.net/media/upload/6/6f/Nimbasa_City_B2W2.png",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/elesa-gen5bw2.png",
                 desc: "Trocas secretas para burlar exclusivos do Black 2, e o parque de diversões de Elesa (Elétrico).",
                 steps: [
@@ -168,7 +168,7 @@
             },
             {
                 area: "Driftveil City e Chargestone Cave",
-                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/d/d4/Driftveil_City_B2W2.png&w=800&q=70&output=webp",
+                bgImg: "archives.bulbagarden.net/media/upload/d/d4/Driftveil_City_B2W2.png",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/clay.png",
                 desc: "A cidade do mestre Terrestre, Clay, e as cavernas elétricas cheias de minérios magnéticos.",
                 steps: [
@@ -181,7 +181,7 @@
             },
             {
                 area: "Mistralton City, Relic Castle e Opelucid",
-                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/e/e4/Opelucid_City_B2W2.png&w=800&q=70&output=webp",
+                bgImg: "archives.bulbagarden.net/media/upload/e/e4/Opelucid_City_B2W2.png",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/skyla.png",
                 desc: "Domine os ares, explore as ruínas secretas por um tesouro raro, e enfrente os dragões de Drayden.",
                 steps: [
@@ -195,7 +195,7 @@
             },
             {
                 area: "Humilau City, Victory Road e Elite 4",
-                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/8/87/Pok%C3%A9mon_League_Unova_B2W2.png&w=800&q=70&output=webp",
+                bgImg: "archives.bulbagarden.net/media/upload/8/87/Pok%C3%A9mon_League_Unova_B2W2.png",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/iris-gen5bw2.png",
                 desc: "A reta final. Atravesse a praia para a última insígnia e enfrente o desafio final da Campeã Iris.",
                 steps: [
@@ -209,7 +209,7 @@
             },
             {
                 area: "Post-Game: White Treehollow e Day Care (OT Project)",
-                bgImg: "https://wsrv.nl/?url=archives.bulbagarden.net/media/upload/2/23/White_Forest_B2W2.png&w=800&q=70&output=webp",
+                bgImg: "archives.bulbagarden.net/media/upload/2/23/White_Forest_B2W2.png",
                 trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/benga.png",
                 desc: "Onde o trabalho de verdade começa. Consertando os buracos da Dex e gerando o Original Trainer.",
                 steps: [
@@ -266,7 +266,9 @@
                 const header = document.createElement('div');
                 header.className = 'relative p-6 flex flex-col justify-center min-h-[160px] border-b border-slate-800 bg-black/60 overflow-hidden';
                 
-                let bgHtml = section.bgImg ? `<img src="${section.bgImg}" class="absolute inset-0 w-full h-full object-cover opacity-[0.25]" style="mix-blend-mode: screen; filter: saturate(1.5);" onerror="this.style.display='none'">` : '';
+                // MÁGICA DO PROXY AQUI: Ele pega qualquer link que colocarmos lá em cima e passa pelo servidor do WSRV para burlar o bloqueio
+                let proxiedUrl = section.bgImg ? `https://wsrv.nl/?url=${section.bgImg.replace(/^https?:\/\//, '')}&w=800&q=70&output=webp` : '';
+                let bgHtml = section.bgImg ? `<img src="${proxiedUrl}" class="absolute inset-0 w-full h-full object-cover opacity-[0.25]" style="mix-blend-mode: screen; filter: saturate(1.5);" onerror="this.style.display='none'">` : '';
                 
                 header.innerHTML = `
                     ${bgHtml}
