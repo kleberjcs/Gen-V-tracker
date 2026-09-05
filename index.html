@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White 2 Living Dex Tracker (Gen 5)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .dex-card { transition: all 0.2s ease; cursor: pointer; user-select: none; }
+        .dex-card:hover { transform: translateY(-2px); }
+        .status-uncaught { background-color: #1e293b; border: 2px solid #334155; opacity: 0.7; }
+        .status-caught { background-color: #065f46; border: 2px solid #10b981; }
+        .status-pc { background-color: #1e3a8a; border: 2px solid #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Estilização Customizada do Checkbox para garantir tamanho uniforme */
+        .custom-checkbox {
+            appearance: none;
+            background-color: #1e293b;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.5em;
+            height: 1.5em;
+            border: 2px solid #475569;
+            border-radius: 0.25em;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .custom-checkbox::before {
+            content: "";
+            width: 0.8em;
+            height: 0.8em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em white;
+            background-color: white;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+
+        .custom-checkbox:checked { background-color: #3b82f6; border-color: #3b82f6; }
+        .custom-checkbox:checked::before { transform: scale(1); }
+
+        .progress-bar-container { background-color: #1e293b; border-radius: 9999px; overflow: hidden; height: 1rem; width: 100%; border: 1px solid #334155;}
+        .progress-bar-fill { background-color: #3b82f6; height: 100%; transition: width 0.3s ease; }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden flex-col md:flex-row">
+
+    <!-- Menu Lateral -->
+    <aside class="w-full md:w-72 bg-slate-900 border-b md:border-r md:border-b-0 border-slate-700 flex flex-col flex-shrink-0 z-10">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-blue-400 drop-shadow-md">White 2 Tracker</h1>
+            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wide font-semibold">Living Dex Gen 5 - OT Only</p>
+        </div>
+        
+        <div class="px-4 mb-4">
+            <p class="text-xs text-slate-400 mb-1 flex justify-between">
+                <span>Progresso Pokédex</span>
+                <span id="dex-pct-text">0%</span>
+            </p>
+            <div class="progress-bar-container">
+                <div id="dex-progress-bar" class="progress-bar-fill w-0"></div>
+            </div>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2 overflow-y-auto">
+            <button onclick="switchTab('history')" id="btn-history" class="w-full text-left px-4 py-3 rounded-lg bg-slate-800 text-white font-medium shadow-sm transition flex items-center justify-between group hover:bg-slate-700">
+                <span>Roteiro de Jogo</span>
+                <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300 group-hover:bg-slate-600" id="hist-pct-text">0%</span>
+            </button>
+            <button onclick="switchTab('dex')" id="btn-dex" class="w-full text-left px-4 py-3 rounded-lg text-slate-400 font-medium transition hover:bg-slate-800 hover:text-white flex items-center">
+                Living Dex Gen 5
+            </button>
+        </nav>
+        
+        <div class="p-4 border-t border-slate-700 mt-auto">
+            <button onclick="clearData()" class="w-full text-sm py-2.5 text-red-400 font-semibold border border-red-900/50 bg-red-900/10 rounded-lg hover:bg-red-900/30 transition">Resetar Progresso</button>
+        </div>
+    </aside>
+
+    <!-- Área Principal -->
+    <main class="flex-1 overflow-y-auto bg-slate-950 p-4 md:p-8 relative">
+        
+        <!-- Tab: Roteiro -->
+        <section id="tab-history" class="max-w-4xl mx-auto pb-20">
+            <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-slate-700 pb-4 mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">Roteiro Otimizado</h2>
+                    <p class="text-sm text-slate-400 mt-1">Siga os passos para coletar a Gen 5 eficientemente.</p>
+                </div>
+            </div>
+            <div id="history-content" class="space-y-8">
+                <!-- Conteúdo Injetado via JS -->
+            </div>
+        </section>
+
+        <!-- Tab: Dex -->
+        <section id="tab-dex" class="hidden max-w-6xl mx-auto pb-20">
+            <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-slate-700 pb-4 mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-white">Living Dex de Unova</h2>
+                    <p class="text-sm text-slate-400 mt-1">Apenas as 156 espécies da Geração 5 (Victini a Genesect).</p>
+                </div>
+                <div class="flex flex-wrap gap-3 text-xs md:text-sm mt-4 md:mt-0 font-medium">
+                    <div class="flex items-center bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700"><span class="w-3 h-3 rounded-full bg-slate-600 mr-2 shadow-inner"></span>Falta</div>
+                    <div class="flex items-center bg-emerald-900/40 px-3 py-1.5 rounded-full border border-emerald-800/50"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-2 shadow-inner"></span>Pego (Time/Misto)</div>
+                    <div class="flex items-center bg-blue-900/40 px-3 py-1.5 rounded-full border border-blue-800/50"><span class="w-3 h-3 rounded-full bg-blue-500 mr-2 shadow-[0_0_8px_#3b82f6]"></span>Pronto no PC (OT)</div>
+                </div>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700 text-sm text-slate-300">
+                <p><strong>Como usar:</strong> Clique em um Pokémon para mudar seu status. Para o projeto, o objetivo final é deixar todos azuis (Pronto no PC), garantindo que você seja o Original Trainer (OT).</p>
+            </div>
+
+            <div id="dex-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-3">
+                <!-- Conteúdo Injetado via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- BANCO DE DADOS: HISTÓRIA (Extensivamente Detalhado) ---
+        const historyData = [
+            {
+                area: "Aspertia City (Início)",
+                image: "https://images.unsplash.com/photo-1480796927426-f609979314bd?auto=format&fit=crop&q=80&w=800", // Cidade limpa/início
+                desc: "Sua jornada começa aqui. Pegue seu inicial e a Pokédex.",
+                steps: [
+                    { id: "step-1-1", text: "Encontre Bianca no mirante ao norte para receber sua Pokédex." },
+                    { id: "step-1-2", text: "<strong>ESCOLHA TEPIG:</strong> Ele terá vantagem esmagadora nos primeiros 3 ginásios. Ficará no time até evoluir para Emboar (Nível 36)." },
+                    { id: "step-1-3", text: "Derrote Hugh (seu rival). Depois, fale com sua mãe para receber o Running Shoes (permite correr)." }
+                ]
+            },
+            {
+                area: "Route 19",
+                image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=800", // Rota campestre
+                desc: "A primeira rota. Apenas grama normal.",
+                steps: [
+                    { id: "step-2-1", text: "<strong>Capture 1 Purrloin (50%):</strong> Coloque no time. O golpe Sand Attack será vital no 1º Ginásio. <strong>NÃO UPE</strong> para Liepard (pegaremos Liepard mais tarde)." },
+                    { id: "step-2-2", text: "<strong>Capture 1 Patrat (50%):</strong> Vá direto para o PC. <strong>NÃO UPE</strong> (Watchog aparece na Rota 7)." }
+                ]
+            },
+            {
+                area: "Floccesy Ranch",
+                image: "https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&q=80&w=800", // Rancho
+                desc: "A fazenda local e primeiro encontro com a Equipe Plasma.",
+                steps: [
+                    { id: "step-3-1", text: "<strong>Capture 1 Lillipup (40%):</strong> Coloque no time. Tem ótimos status iniciais. <strong>NÃO UPE</strong> (Herdier e Stoutland são fáceis de pegar depois)." },
+                    { id: "step-3-2", text: "<strong>Capture 1 Pidove e 1 Sewaddle (Rota 20):</strong> Mande para o PC. (Evoluções aparecem na Rota 6)." },
+                    { id: "step-3-3", text: "Encontre o Herdier perdido no fundo do rancho e enfrente o bandido da Team Plasma." }
+                ]
+            },
+            {
+                area: "Ginásio 1: Aspertia City (Cheren)",
+                image: "https://images.unsplash.com/photo-1576267423445-b2e0074d68a4?auto=format&fit=crop&q=80&w=800", // Escola/Ginásio
+                desc: "Líder Cheren (Tipo Normal). Recompensa: Basic Badge.",
+                steps: [
+                    { id: "step-4-1", text: "Abra a luta usando seu Purrloin. Use <strong>Sand Attack 3x</strong> no Patrat do Cheren para cegá-lo." },
+                    { id: "step-4-2", text: "Troque para Tepig ou Lillipup para finalizar a luta em segurança, evitando o combo de Work Up do líder." }
+                ]
+            },
+            {
+                area: "Virbank City & Complexo",
+                image: "https://images.unsplash.com/photo-1470229722913-7c092db658cb?auto=format&fit=crop&q=80&w=800", // Industrial / Neon
+                desc: "O Polo Industrial de Unova. Libera a grama que balança (Rustling Grass).",
+                steps: [
+                    { id: "step-5-1", text: "<strong>Capture 1 Venipede (20% no Complexo):</strong> PC. <strong>NÃO UPE</strong> (Whirlipede e Scolipede aparecem em florestas)." },
+                    { id: "step-5-2", text: "<strong>FARM DE XP (Importante):</strong> Ande fora da grama até um mato balançar. <strong>Capture 1 Audino (100%)</strong>. Continue matando Audinos para upar seu Tepig até o Nível 17 (evolui para Pignite)." }
+                ]
+            },
+            {
+                area: "Ginásio 2: Virbank City (Roxie)",
+                image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800", // Rock Club
+                desc: "Líder Roxie (Tipo Venenoso). Clube de Rock Subterrâneo.",
+                steps: [
+                    { id: "step-6-1", text: "Seu Pignite destrói esse ginásio. Use ataques de fogo no Whirlipede (que é Inseto/Veneno) para dano super efetivo." },
+                    { id: "step-6-2", text: "Cuidado para não usar Pokémon de Planta aqui. Ganhe a Toxic Badge." }
+                ]
+            },
+            {
+                area: "Castelia City & Esgotos",
+                image: "https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&q=80&w=800", // Metropole
+                desc: "A grande metrópole. Acesso aos esgotos.",
+                steps: [
+                    { id: "step-7-1", text: "<strong>Capture 1 Scraggy (Esgotos):</strong> Excelente Pokémon. Fica no time (evolui para Scrafty no Nível 39)." },
+                    { id: "step-7-2", text: "<strong>Capture 2 Petilil (Parque Isolado):</strong> Vá pelos esgotos até o parque. Guarde um no PC e mantenha o outro na bolsa (usaremos para troca logo)." }
+                ]
+            },
+            {
+                area: "Ginásio 3: Castelia City (Burgh)",
+                image: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=800", // Casulos/Natureza
+                desc: "Líder Burgh (Tipo Inseto). Casulos de Seda.",
+                steps: [
+                    { id: "step-8-1", text: "Pignite brilha novamente. Ataques de fogo derretem Leavanny e Swadloon." },
+                    { id: "step-8-2", text: "Para o Dwebble (Inseto/Pedra), ataques de fogo são neutros. Use o golpe lutador <strong>Arm Thrust</strong> para finalizá-lo." }
+                ]
+            },
+            {
+                area: "A Anomalia da Rota 4",
+                image: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?auto=format&fit=crop&q=80&w=800", // Deserto
+                desc: "Área de areia. Como pegar o exclusivo de Black 2.",
+                steps: [
+                    { id: "step-9-1", text: "<strong>TROCA VITAL:</strong> Entre num dos prédios e ache 'Youngster Cotton'. Troque um dos seus Petilil pelo <strong>Cottonee (Fluffee)</strong> dele. Isso garante a entrada na Dex." },
+                    { id: "step-9-2", text: "<strong>Capture 1 Sandile e 1 Darumaka:</strong> Sandile vai pro <strong>TIME</strong> (Imunidade pro próximo ginásio). Darumaka vai pro PC." }
+                ]
+            },
+            {
+                area: "Ginásio 4: Nimbasa City (Elesa)",
+                image: "https://images.unsplash.com/photo-1550079027-e4c19451634b?auto=format&fit=crop&q=80&w=800", // Passarela / Eletrico
+                desc: "Líder Elesa (Tipo Elétrico). A Passarela.",
+                steps: [
+                    { id: "step-10-1", text: "<strong>Estratégia:</strong> Elesa usa Volt Switch para fugir. Seu Sandile (agora Krokorok) é IMUNE a ataques elétricos." },
+                    { id: "step-10-2", text: "Ensine o TM Dig (cavar) para Krokorok e vença a luta facilmente. Receba a Bolt Badge." }
+                ]
+            }
+        ];
+
+        // --- BANCO DE DADOS: POKÉDEX GEN 5 ---
+        // Apenas Pokémon #494 a #649
+        const dexNames = [
+// <!-- ... existing code ... -->
+        function renderDex() {
+            const container = document.getElementById('dex-grid');
+            container.innerHTML = '';
+            
+            let caughtCount = 0;
+            let pcCount = 0;
+
+            dexData.forEach(pokemon => {
+                const state = dexState[pokemon.id];
+                let bgClass = 'status-uncaught text-slate-500';
+                let iconClass = 'opacity-30 grayscale contrast-75 brightness-50';
+                
+                if(state === 1) { 
+                    bgClass = 'status-caught text-emerald-100'; 
+                    iconClass = 'opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]';
+                    caughtCount++;
+                }
+                else if(state === 2) { 
+                    bgClass = 'status-pc text-blue-50 font-medium'; 
+                    iconClass = 'opacity-100 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]';
+                    pcCount++;
+                    caughtCount++;
+                }
+
+                // URL ATUALIZADA: Puxando da base de dados do Pokémon DB (Sprites originais do jogo Black/White) garantidos de carregar.
+                let safeName = pokemon.name.toLowerCase();
+                const spriteUrl = `https://img.pokemondb.net/sprites/black-white/normal/${safeName}.png`;
+
+                const div = document.createElement('div');
+                div.className = `dex-card rounded-xl p-3 flex flex-col items-center justify-center text-center aspect-square ${bgClass}`;
+                div.onclick = () => toggleDex(pokemon.id);
+                
+                div.innerHTML = `
+                    <div class="text-[10px] font-mono tracking-wider opacity-60 mb-1">#${pokemon.id}</div>
+                    <div class="relative w-14 h-14 flex items-center justify-center mb-1">
+                        <img src="${spriteUrl}" class="max-w-full max-h-full object-contain ${iconClass}" alt="${pokemon.name}" loading="lazy" onerror="this.src='https://placehold.co/56x56/1e293b/475569?text=?'">
+                    </div>
+                    <div class="text-xs tracking-tight truncate w-full">${pokemon.name}</div>
+                `;
+                container.appendChild(div);
+            });
+// <!-- ... existing code ... -->
