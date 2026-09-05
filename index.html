@@ -9,7 +9,7 @@
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
         .dex-card { transition: all 0.2s ease; cursor: pointer; user-select: none; }
         .dex-card:hover { transform: translateY(-2px); }
-        .status-uncaught { background-color: #1e293b; border: 2px solid #334155; opacity: 0.7; }
+        .status-uncaught { background-color: #1e293b; border: 2px solid #334155; opacity: 0.7; filter: grayscale(100%); }
         .status-caught { background-color: #065f46; border: 2px solid #10b981; }
         .status-pc { background-color: #1e3a8a; border: 2px solid #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
         
@@ -93,8 +93,8 @@
         <section id="tab-history" class="max-w-4xl mx-auto pb-20">
             <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-slate-700 pb-4 mb-6">
                 <div>
-                    <h2 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">Roteiro Otimizado</h2>
-                    <p class="text-sm text-slate-400 mt-1">Siga os passos e capture apenas o essencial sem perder tempo.</p>
+                    <h2 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">Guia de Captura Otimizado</h2>
+                    <p class="text-sm text-slate-400 mt-1">Siga os passos para capturar apenas o necessário, evitando evoluir Pokémon que podem ser pegos prontos mais tarde.</p>
                 </div>
             </div>
             <div id="history-content" class="space-y-8">
@@ -110,13 +110,13 @@
                 </div>
                 <div class="flex flex-wrap gap-3 text-xs md:text-sm mt-4 md:mt-0 font-medium">
                     <div class="flex items-center bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700"><span class="w-3 h-3 rounded-full bg-slate-600 mr-2 shadow-inner"></span>Falta</div>
-                    <div class="flex items-center bg-emerald-900/40 px-3 py-1.5 rounded-full border border-emerald-800/50"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-2 shadow-inner"></span>No Time (Upando)</div>
-                    <div class="flex items-center bg-blue-900/40 px-3 py-1.5 rounded-full border border-blue-800/50"><span class="w-3 h-3 rounded-full bg-blue-500 mr-2 shadow-[0_0_8px_#3b82f6]"></span>Pronto no PC (OT)</div>
+                    <div class="flex items-center bg-emerald-900/40 px-3 py-1.5 rounded-full border border-emerald-800/50"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-2 shadow-inner"></span>Capturado</div>
+                    <div class="flex items-center bg-blue-900/40 px-3 py-1.5 rounded-full border border-blue-800/50"><span class="w-3 h-3 rounded-full bg-blue-500 mr-2 shadow-[0_0_8px_#3b82f6]"></span>No PC (Seu OT)</div>
                 </div>
             </div>
             
             <div class="bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700 text-sm text-slate-300">
-                <p><strong>Como usar:</strong> Clique no Pokémon para avançar o status. Seu objetivo final é deixar todos com a borda azul, significando que estão parados no PC e com o seu Original Trainer (OT).</p>
+                <p><strong>Regra de Ouro (OT):</strong> Para a aba "No PC" valer, o Pokémon precisa ter sido chocado de um ovo seu ou capturado por você. Trocas de NPC (como o Cottonee) devem ir pro Day Care com Ditto depois para gerar um ovo com seu nome!</p>
             </div>
 
             <div id="dex-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-3">
@@ -127,84 +127,77 @@
     </main>
 
     <script>
+        const pokeApi = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/";
+        
         const historyData = [
             {
                 area: "Aspertia City (Início da Jornada)",
-                image: "https://images.unsplash.com/photo-1480796927426-f609979314bd?auto=format&fit=crop&q=80&w=800",
-                desc: "Sua aventura começa aqui. Receba seu inicial e a Pokédex de Bianca.",
+                trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/bianca-gen5bw2.png",
+                desc: "Fale com Bianca no mirante norte para pegar sua Pokédex e seu primeiro parceiro.",
                 steps: [
-                    { id: "h1", text: "Encontre Bianca no mirante norte para pegar a Pokédex." },
-                    { id: "h2", text: "<strong>ESCOLHA TEPIG:</strong> Ele é essencial para derrotar os ginásios Venenoso e Inseto que virão. (Servine e Oshawott você fará breed depois via Ditto)." },
-                    { id: "h3", text: "Derrote seu Rival (Hugh) na primeira batalha." },
-                    { id: "h4", text: "Receba o Running Shoes da sua mãe para correr apertando 'B'." }
+                    { id: "h1", text: "<strong>A Escolha:</strong> Escolha <img src='"+pokeApi+"498.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Tepig</strong>. Ele será crucial para os ginásios 2 e 3. Guarde-o no Slot de Up (Time ativo) até o nível 36, quando vira Emboar." },
+                    { id: "h2", text: "Derrote seu Rival (Hugh) na primeira batalha." },
+                    { id: "h3", text: "Vá ao Centro Pokémon com a Bianca, ganhe Pokébolas e receba os Running Shoes da sua mãe para correr." }
                 ]
             },
             {
-                area: "Route 19 e Route 20",
-                image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=800",
-                desc: "Os primeiros contatos com matinhos selvagens. Capture apenas o básico.",
+                area: "Rotas 19 e 20",
+                trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/hugh.png",
+                desc: "Os primeiros matinhos. Capture as formas base, mas não gaste tempo upando se a evolução for fácil de achar solta depois.",
                 steps: [
-                    { id: "h5", text: "<strong>Rota 19:</strong> Capture UM Purrloin. Ficará no time agora apenas para usar Sand Attack no 1º Ginásio." },
-                    { id: "h6", text: "<strong>Rota 19:</strong> Capture UM Patrat. Mande pro PC. Não perca tempo upando, pois Watchog aparece selvagem mais tarde." },
-                    { id: "h7", text: "<strong>Rota 20:</strong> Capture UM Pidove e UM Sewaddle. Ambos pro PC. (Evoluções deles são achadas depois)." }
+                    { id: "h4", text: "<strong>Rota 19:</strong> Capture UM <img src='"+pokeApi+"504.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Patrat</strong>. Mande-o direto pro PC (Watchog aparece selvagem mais tarde)." },
+                    { id: "h5", text: "<strong>Rota 19:</strong> Capture UM <img src='"+pokeApi+"509.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Purrloin</strong>. Coloque no time. Os ataques de diminuir precisão dele serão úteis no 1º Ginásio. Não upe para Liepard." },
+                    { id: "h6", text: "<strong>Rota 20:</strong> Capture UM <img src='"+pokeApi+"519.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Pidove</strong>. Mande pro PC. (Tranquill e Unfezant achamos soltos depois)." },
+                    { id: "h7", text: "<strong>Rota 20:</strong> Capture UM <img src='"+pokeApi+"540.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Sewaddle</strong>. Mande pro PC." }
                 ]
             },
             {
-                area: "Floccesy Ranch e Ginásio de Aspertia",
-                image: "https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&q=80&w=800",
-                desc: "O caso do Herdier perdido e o desafio do líder Cheren.",
+                area: "Floccesy Ranch & 1º Ginásio",
+                trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/cheren-gen5bw2.png",
+                desc: "Ajude os donos do rancho a achar o Herdier e prepare-se para enfrentar Cheren.",
                 steps: [
-                    { id: "h8", text: "<strong>Floccesy:</strong> Capture UM Lillipup. Deixe no time por seus bons atributos iniciais, mas não upe focado nele (Herdier e Stoutland pegaremos depois)." },
-                    { id: "h9", text: "Encontre o membro da Equipe Plasma nos fundos do rancho e salve o Herdier do fazendeiro." },
-                    { id: "h10", text: "<strong>Ginásio 1 (Aspertia):</strong> Enfrente Cheren (Tipo Normal). Use os Sand Attacks do seu Purrloin no Patrat dele para cegá-lo. Finalize com Tepig. Receba a Basic Badge." }
+                    { id: "h8", text: "<strong>Rancho:</strong> Capture UM <img src='"+pokeApi+"506.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Lillipup</strong>. Mande pro PC. Seus status são bons, mas Herdier/Stoutland são muito comuns nas próximas rotas, não gaste tempo upando-o." },
+                    { id: "h9", text: "Encontre o membro da Equipe Plasma escondido nos fundos e salve o Herdier." },
+                    { id: "h10", text: "<strong>Ginásio 1 (Aspertia):</strong> Volte para sua cidade natal. O ginásio fica na Escola. Enfrente Cheren (Normal). Abra a luta com Purrloin usando Sand Attack/Growl para cegar o oponente. Finalize com Tepig." }
                 ]
             },
             {
-                area: "Virbank City & Complex",
-                image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800",
-                desc: "A cidade costeira tóxica e o show da líder Roxie.",
+                area: "Virbank City e o Complexo",
+                trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/roxie.png",
+                desc: "A cidade industrial tóxica de Roxie. Cuidado com o envenenamento.",
                 steps: [
-                    { id: "h11", text: "A Grama que Balança (Rustling Grass) está liberada. Ande fora do mato até ele balançar e capture UM <strong>Audino</strong>." },
-                    { id: "h12", text: "<strong>Complexo:</strong> Capture UM Venipede (Mande pro PC, evoluções achamos depois). E se quiser, um Magnemite (não conta pra Dex Gen 5, mas é imune a Veneno)." },
-                    { id: "h13", text: "Upe seu Tepig até o Nível 17 matando Audinos para ele evoluir para Pignite e ganhar tipo Lutador." },
-                    { id: "h14", text: "<strong>Ginásio 2 (Virbank):</strong> Enfrente Roxie (Veneno). Pignite com ataques de Fogo varre o time dela facilmente. Receba a Toxic Badge." },
-                    { id: "h15", text: "Vá ao Pokéstar Studios (obrigatório) e grave seu primeiro filme para desbloquear o barco do pai da Roxie." }
+                    { id: "h11", text: "A Grama que Balança (Rustling Grass) está ativa. Ande fora da grama até uma balançar. Capture UM <img src='"+pokeApi+"531.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Audino</strong>." },
+                    { id: "h12", text: "Derrotar Audinos é a melhor forma de ganhar XP rápido no jogo! Upe seu Tepig até o Nível 17 aqui para ele evoluir para Pignite (ganha golpes lutadores)." },
+                    { id: "h13", text: "<strong>Complexo:</strong> Capture UM <img src='"+pokeApi+"543.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Venipede</strong>. Mande pro PC (Whirlipede achamos na Lostlorn Forest)." },
+                    { id: "h14", text: "<strong>Ginásio 2 (Virbank):</strong> Enfrente Roxie (Veneno). Pignite no nível 17 varre todo o time dela facilmente com Flame Charge. Ganhe a Toxic Badge." },
+                    { id: "h15", text: "Vá ao Pokéstar Studios (obrigatório ao norte) e grave 1 filme para o capitão do barco aceitar te levar para Castelia." }
                 ]
             },
             {
-                area: "Castelia City & Sewers (Esgotos)",
-                image: "https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&q=80&w=800",
-                desc: "A metrópole de Unova. Capturas cruciais acontecem aqui.",
+                area: "Castelia City & Esgotos",
+                trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/burgh.png",
+                desc: "A metrópole de Unova. Muitas capturas cruciais acontecem aqui.",
                 steps: [
-                    { id: "h16", text: "Nos esgotos, ande com Hugh. Cada batalha selvagem será em dupla e ele curará seus Pokémon após a luta (Ótimo pra farmar XP livre)." },
-                    { id: "h17", text: "<strong>Esgotos:</strong> Capture UM Scraggy. Coloque no Slot de Up (Time Principal), ele evolui tarde (Nível 39) e tem tipagem incrível (Lutador/Sombrio)." },
-                    { id: "h18", text: "<strong>Parque Isolado (Via Esgoto):</strong> Capture <strong>DOIS Petilil</strong>. Um vai para o PC, o outro fica na bolsa para uma troca iminente." },
-                    { id: "h19", text: "<strong>Ginásio 3 (Castelia):</strong> Enfrente Burgh (Inseto). Seu Pignite queima Leavanny e Swadloon. O Dwebble toma dano neutro, use golpes lutadores. Receba a Insect Badge." }
+                    { id: "h16", text: "Nos esgotos, Hugh batalha ao seu lado e cura seus Pokémon após cada luta. Aproveite para farmar XP livre." },
+                    { id: "h17", text: "<strong>Esgotos:</strong> Capture UM <img src='"+pokeApi+"559.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Scraggy</strong>. Excelente lutador, coloque no Slot de Up (Time principal). Ele só evolui no Nível 39." },
+                    { id: "h18", text: "<strong>Parque Isolado:</strong> Acessível por uma escada nos esgotos. Capture DOIS <img src='"+pokeApi+"548.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Petilil</strong>. Um vai pro PC, o outro fica na sua mochila para uma troca logo adiante." },
+                    { id: "h19", text: "<strong>Ginásio 3 (Castelia):</strong> Enfrente Burgh (Inseto). Pignite aniquila Swadloon e Leavanny com fogo. O Dwebble toma dano normal, use golpes lutadores. Receba a Insect Badge." }
                 ]
             },
             {
-                area: "A Anomalia da Rota 4 e Deserto",
-                image: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?auto=format&fit=crop&q=80&w=800",
-                desc: "O contorno da exclusividade de Black 2 e capturas do deserto.",
+                area: "A Rota 4 e o Bypass do Exclusivo",
+                trainerSprite: "https://play.pokemonshowdown.com/sprites/trainers/elesa-gen5bw2.png",
+                desc: "O Deserto guarda grandes oportunidades e a ponte para o próximo Ginásio Elétrico.",
                 steps: [
-                    { id: "h20", text: "<strong>Troca Vital:</strong> Em um dos prédios da Rota 4, troque um dos Petilil com o NPC para ganhar um <strong>Cottonee (Fluffee)</strong>. Ele vem com Power Weight! Guarde no PC." },
-                    { id: "h21", text: "<strong>Rota 4 / Deserto:</strong> Capture UM Sandile. Coloque direto no time, a imunidade elétrica dele vencerá o próximo ginásio." },
-                    { id: "h22", text: "Capture também: Darumaka, Trubbish, Yamask, Maractus, Dwebble e Sigilyph (Mande todos pro PC, evoluiremos via exp share ou pegamos evolução depois)." }
-                ]
-            },
-            {
-                area: "Nimbasa City (Ginásio 4)",
-                image: "https://images.unsplash.com/photo-1550079027-e4c19451634b?auto=format&fit=crop&q=80&w=800",
-                desc: "A passarela brilhante de Elesa.",
-                steps: [
-                    { id: "h23", text: "Batalhe nos Estádios (Small Court / Big Stadium) para farmar muito XP diário para seu Sandile (deve evoluir pra Krokorok no 29) e Pignite." },
-                    { id: "h24", text: "Pegue o TM Dig (Cavar) na Rota 4 e ensine para o Krokorok." },
-                    { id: "h25", text: "<strong>Ginásio 4 (Nimbasa):</strong> Elesa usa Emolga e Zebstrika com Volt Switch. Seu Krokorok é imune a choques. Use Dig e destrua-a. Receba a Bolt Badge." }
+                    { id: "h20", text: "<strong>O BYPASS:</strong> Cottonee é exclusivo do Black 2, MAS em um dos prédios da Rota 4, troque um Petilil com o NPC para ganhar um <img src='"+pokeApi+"546.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Cottonee</strong>! Pegue o item dele e guarde-o pro Breeding (para tirar o OT do NPC)." },
+                    { id: "h21", text: "<strong>Rota 4:</strong> Capture UM <img src='"+pokeApi+"551.png' class='inline-block h-8 -mt-2 align-middle'> <strong>Sandile</strong>. Essencial: coloque direto no time, a imunidade elétrica dele vencerá Elesa." },
+                    { id: "h22", text: "<strong>Deserto / Rota 4:</strong> Capture <img src='"+pokeApi+"554.png' class='inline h-6'> Darumaka, <img src='"+pokeApi+"568.png' class='inline h-6'> Trubbish, <img src='"+pokeApi+"562.png' class='inline h-6'> Yamask, <img src='"+pokeApi+"556.png' class='inline h-6'> Maractus e <img src='"+pokeApi+"561.png' class='inline h-6'> Sigilyph. Maractus e Sigilyph não evoluem, já marque 'PC' na Dex." },
+                    { id: "h23", text: "<strong>Nimbasa City:</strong> Batalhe nos Estádios de esportes. Farme XP para Sandile evoluir para Krokorok (Nível 29)." },
+                    { id: "h24", text: "<strong>Ginásio 4 (Nimbasa):</strong> Elesa (Elétrico). Krokorok é imune aos Volt Switches cruéis dela. Use Dig (pego na Rota 4) para vencer a Bolt Badge." }
                 ]
             }
         ];
 
-        // Gerando o array completo dinamicamente para evitar poluir visualmente e economizar limites
         const gen5Names = [
             "Victini", "Snivy", "Servine", "Serperior", "Tepig", "Pignite", "Emboar", "Oshawott", "Dewott", "Samurott",
             "Patrat", "Watchog", "Lillipup", "Herdier", "Stoutland", "Purrloin", "Liepard", "Pansage", "Simisage",
@@ -226,7 +219,6 @@
             "Thundurus", "Reshiram", "Zekrom", "Landorus", "Kyurem", "Keldeo", "Meloetta", "Genesect"
         ];
 
-        // Mapeia os nomes em objetos com ID começando do 494
         const dexData = gen5Names.map((name, index) => {
             return { id: 494 + index, name: name };
         });
@@ -249,27 +241,31 @@
                 const secDiv = document.createElement('div');
                 secDiv.className = 'bg-slate-900 rounded-xl overflow-hidden border border-slate-800 shadow-lg';
                 
-                // Cabeçalho da Seção com Imagem
+                // Novo cabeçalho: gradiente CSS escuro com o Sprite oficial
                 const header = document.createElement('div');
-                header.className = 'h-32 bg-cover bg-center relative';
-                header.style.backgroundImage = `url('${section.image}')`;
+                header.className = 'bg-gradient-to-r from-slate-900 to-slate-800 p-5 flex items-center justify-between border-b border-slate-800';
+                
+                let spriteHtml = section.trainerSprite ? `<img src="${section.trainerSprite}" alt="Trainer Sprite" class="h-20 w-auto object-contain drop-shadow-lg opacity-90">` : '';
+                
                 header.innerHTML = `
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
-                    <div class="absolute bottom-4 left-6 right-6">
-                        <h3 class="text-xl font-bold text-white drop-shadow-md">${section.area}</h3>
-                        <p class="text-xs text-slate-300 drop-shadow">${section.desc}</p>
+                    <div class="flex-1 pr-4">
+                        <h3 class="text-xl font-bold text-white mb-1 tracking-tight">${section.area}</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">${section.desc}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        ${spriteHtml}
                     </div>
                 `;
                 
                 const stepsContainer = document.createElement('div');
-                stepsContainer.className = 'p-6 space-y-4';
+                stepsContainer.className = 'p-5 space-y-4';
 
                 section.steps.forEach(step => {
                     const isChecked = historyState[step.id] ? 'checked' : '';
-                    const textClass = historyState[step.id] ? 'text-slate-500 line-through' : 'text-slate-200';
+                    const textClass = historyState[step.id] ? 'text-slate-500 line-through opacity-70' : 'text-slate-200';
                     
                     const stepDiv = document.createElement('label');
-                    stepDiv.className = 'flex items-start gap-4 cursor-pointer group';
+                    stepDiv.className = 'flex items-start gap-4 cursor-pointer group p-2 hover:bg-slate-800/50 rounded-lg transition-colors';
                     stepDiv.innerHTML = `
                         <input type="checkbox" class="custom-checkbox mt-0.5" ${isChecked} onchange="toggleHistory('${step.id}')">
                         <span class="text-sm leading-relaxed transition-colors duration-200 ${textClass}">${step.text}</span>
@@ -290,29 +286,21 @@
             dexData.forEach(pokemon => {
                 const state = dexState[pokemon.id] || 0;
                 let bgClass = 'status-uncaught text-slate-500';
-                let iconClass = 'opacity-30 grayscale contrast-75 brightness-50';
                 
-                if(state === 1) { 
-                    bgClass = 'status-caught text-emerald-100'; 
-                    iconClass = 'opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]';
-                }
-                else if(state === 2) { 
-                    bgClass = 'status-pc text-blue-50 font-medium'; 
-                    iconClass = 'opacity-100 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]';
-                }
+                if(state === 1) bgClass = 'status-caught text-emerald-100'; 
+                else if(state === 2) bgClass = 'status-pc text-blue-50 font-medium'; 
 
-                // Sprite oficial do jogo
-                let safeName = pokemon.name.toLowerCase();
-                const spriteUrl = `https://img.pokemondb.net/sprites/black-white/normal/${safeName}.png`;
+                // Imagens dos Pokémon agora puxam direto da PokeAPI oficial, 100% à prova de falhas.
+                const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/${pokemon.id}.png`;
 
                 const div = document.createElement('div');
                 div.className = `dex-card rounded-xl p-3 flex flex-col items-center justify-center text-center aspect-square ${bgClass}`;
                 div.onclick = () => toggleDex(pokemon.id);
                 
                 div.innerHTML = `
-                    <div class="text-[10px] font-mono tracking-wider opacity-60 mb-1">#${pokemon.id}</div>
+                    <div class="text-[10px] font-mono tracking-wider opacity-70 mb-1">#${pokemon.id}</div>
                     <div class="relative w-14 h-14 flex items-center justify-center mb-1">
-                        <img src="${spriteUrl}" class="max-w-full max-h-full object-contain ${iconClass}" alt="${pokemon.name}" loading="lazy" onerror="this.style.display='none'">
+                        <img src="${spriteUrl}" class="max-w-full max-h-full object-contain drop-shadow-md" alt="${pokemon.name}" loading="lazy" onerror="this.style.display='none'">
                     </div>
                     <div class="text-xs tracking-tight truncate w-full">${pokemon.name}</div>
                 `;
@@ -328,7 +316,6 @@
         }
 
         function toggleDex(id) {
-            // Ciclo: 0 (Falta) -> 1 (Time) -> 2 (PC) -> 0
             const current = dexState[id] || 0;
             dexState[id] = current === 2 ? 0 : current + 1;
             localStorage.setItem('w2_dex', JSON.stringify(dexState));
@@ -337,7 +324,6 @@
         }
 
         function updateProgress() {
-            // Dex Progress (Apenas Status 2 conta como "Finalizado" para a Living Dex)
             let dexFinished = 0;
             const totalDex = dexData.length;
             
@@ -349,7 +335,6 @@
             document.getElementById('dex-pct-text').innerText = `${dexFinished}/${totalDex} (${dexPct}%)`;
             document.getElementById('dex-progress-bar').style.width = `${dexPct}%`;
 
-            // History Progress
             let histChecked = 0;
             let histTotal = 0;
             historyData.forEach(sec => {
