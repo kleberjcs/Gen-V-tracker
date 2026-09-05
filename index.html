@@ -13,13 +13,11 @@
         .status-caught { background-color: #065f46; border: 2px solid #10b981; }
         .status-pc { background-color: #1e3a8a; border: 2px solid #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        /* Estilização Customizada do Checkbox para garantir tamanho uniforme */
         .custom-checkbox {
             appearance: none;
             background-color: #1e293b;
@@ -58,7 +56,6 @@
 </head>
 <body class="h-screen flex overflow-hidden flex-col md:flex-row">
 
-    <!-- Menu Lateral -->
     <aside class="w-full md:w-72 bg-slate-900 border-b md:border-r md:border-b-0 border-slate-700 flex flex-col flex-shrink-0 z-10">
         <div class="p-6">
             <h1 class="text-2xl font-bold text-blue-400 drop-shadow-md">White 2 Tracker</h1>
@@ -75,7 +72,7 @@
             </div>
         </div>
 
-        <nav class="flex-1 px-4 space-y-2 overflow-y-auto">
+        <nav class="flex-1 px-4 space-y-2 overflow-y-auto mt-4">
             <button onclick="switchTab('history')" id="btn-history" class="w-full text-left px-4 py-3 rounded-lg bg-slate-800 text-white font-medium shadow-sm transition flex items-center justify-between group hover:bg-slate-700">
                 <span>Roteiro de Jogo</span>
                 <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300 group-hover:bg-slate-600" id="hist-pct-text">0%</span>
@@ -86,11 +83,10 @@
         </nav>
         
         <div class="p-4 border-t border-slate-700 mt-auto">
-            <button onclick="clearData()" class="w-full text-sm py-2.5 text-red-400 font-semibold border border-red-900/50 bg-red-900/10 rounded-lg hover:bg-red-900/30 transition">Resetar Progresso</button>
+            <button id="btn-reset" onclick="handleReset()" class="w-full text-sm py-2.5 text-red-400 font-semibold border border-red-900/50 bg-red-900/10 rounded-lg hover:bg-red-900/30 transition">Zerar Progresso</button>
         </div>
     </aside>
 
-    <!-- Área Principal -->
     <main class="flex-1 overflow-y-auto bg-slate-950 p-4 md:p-8 relative">
         
         <!-- Tab: Roteiro -->
@@ -98,7 +94,7 @@
             <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-slate-700 pb-4 mb-6">
                 <div>
                     <h2 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">Roteiro Otimizado</h2>
-                    <p class="text-sm text-slate-400 mt-1">Siga os passos para coletar a Gen 5 eficientemente.</p>
+                    <p class="text-sm text-slate-400 mt-1">Siga os passos e capture apenas o essencial sem perder tempo.</p>
                 </div>
             </div>
             <div id="history-content" class="space-y-8">
@@ -106,22 +102,21 @@
             </div>
         </section>
 
-        <!-- Tab: Dex -->
         <section id="tab-dex" class="hidden max-w-6xl mx-auto pb-20">
             <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-slate-700 pb-4 mb-6">
                 <div>
                     <h2 class="text-3xl font-bold text-white">Living Dex de Unova</h2>
-                    <p class="text-sm text-slate-400 mt-1">Apenas as 156 espécies da Geração 5 (Victini a Genesect).</p>
+                    <p class="text-sm text-slate-400 mt-1">As 156 espécies da Geração 5 (Victini a Genesect).</p>
                 </div>
                 <div class="flex flex-wrap gap-3 text-xs md:text-sm mt-4 md:mt-0 font-medium">
                     <div class="flex items-center bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700"><span class="w-3 h-3 rounded-full bg-slate-600 mr-2 shadow-inner"></span>Falta</div>
-                    <div class="flex items-center bg-emerald-900/40 px-3 py-1.5 rounded-full border border-emerald-800/50"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-2 shadow-inner"></span>Pego (Time/Misto)</div>
+                    <div class="flex items-center bg-emerald-900/40 px-3 py-1.5 rounded-full border border-emerald-800/50"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-2 shadow-inner"></span>No Time (Upando)</div>
                     <div class="flex items-center bg-blue-900/40 px-3 py-1.5 rounded-full border border-blue-800/50"><span class="w-3 h-3 rounded-full bg-blue-500 mr-2 shadow-[0_0_8px_#3b82f6]"></span>Pronto no PC (OT)</div>
                 </div>
             </div>
             
             <div class="bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700 text-sm text-slate-300">
-                <p><strong>Como usar:</strong> Clique em um Pokémon para mudar seu status. Para o projeto, o objetivo final é deixar todos azuis (Pronto no PC), garantindo que você seja o Original Trainer (OT).</p>
+                <p><strong>Como usar:</strong> Clique no Pokémon para avançar o status. Seu objetivo final é deixar todos com a borda azul, significando que estão parados no PC e com o seu Original Trainer (OT).</p>
             </div>
 
             <div id="dex-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-3">
@@ -132,131 +127,181 @@
     </main>
 
     <script>
-        // --- BANCO DE DADOS: HISTÓRIA (Extensivamente Detalhado) ---
         const historyData = [
             {
-                area: "Aspertia City (Início)",
-                image: "https://images.unsplash.com/photo-1480796927426-f609979314bd?auto=format&fit=crop&q=80&w=800", // Cidade limpa/início
-                desc: "Sua jornada começa aqui. Pegue seu inicial e a Pokédex.",
+                area: "Aspertia City (Início da Jornada)",
+                image: "https://images.unsplash.com/photo-1480796927426-f609979314bd?auto=format&fit=crop&q=80&w=800",
+                desc: "Sua aventura começa aqui. Receba seu inicial e a Pokédex de Bianca.",
                 steps: [
-                    { id: "step-1-1", text: "Encontre Bianca no mirante ao norte para receber sua Pokédex." },
-                    { id: "step-1-2", text: "<strong>ESCOLHA TEPIG:</strong> Ele terá vantagem esmagadora nos primeiros 3 ginásios. Ficará no time até evoluir para Emboar (Nível 36)." },
-                    { id: "step-1-3", text: "Derrote Hugh (seu rival). Depois, fale com sua mãe para receber o Running Shoes (permite correr)." }
+                    { id: "h1", text: "Encontre Bianca no mirante norte para pegar a Pokédex." },
+                    { id: "h2", text: "<strong>ESCOLHA TEPIG:</strong> Ele é essencial para derrotar os ginásios Venenoso e Inseto que virão. (Servine e Oshawott você fará breed depois via Ditto)." },
+                    { id: "h3", text: "Derrote seu Rival (Hugh) na primeira batalha." },
+                    { id: "h4", text: "Receba o Running Shoes da sua mãe para correr apertando 'B'." }
                 ]
             },
             {
-                area: "Route 19",
-                image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=800", // Rota campestre
-                desc: "A primeira rota. Apenas grama normal.",
+                area: "Route 19 e Route 20",
+                image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=800",
+                desc: "Os primeiros contatos com matinhos selvagens. Capture apenas o básico.",
                 steps: [
-                    { id: "step-2-1", text: "<strong>Capture 1 Purrloin (50%):</strong> Coloque no time. O golpe Sand Attack será vital no 1º Ginásio. <strong>NÃO UPE</strong> para Liepard (pegaremos Liepard mais tarde)." },
-                    { id: "step-2-2", text: "<strong>Capture 1 Patrat (50%):</strong> Vá direto para o PC. <strong>NÃO UPE</strong> (Watchog aparece na Rota 7)." }
+                    { id: "h5", text: "<strong>Rota 19:</strong> Capture UM Purrloin. Ficará no time agora apenas para usar Sand Attack no 1º Ginásio." },
+                    { id: "h6", text: "<strong>Rota 19:</strong> Capture UM Patrat. Mande pro PC. Não perca tempo upando, pois Watchog aparece selvagem mais tarde." },
+                    { id: "h7", text: "<strong>Rota 20:</strong> Capture UM Pidove e UM Sewaddle. Ambos pro PC. (Evoluções deles são achadas depois)." }
                 ]
             },
             {
-                area: "Floccesy Ranch",
-                image: "https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&q=80&w=800", // Rancho
-                desc: "A fazenda local e primeiro encontro com a Equipe Plasma.",
+                area: "Floccesy Ranch e Ginásio de Aspertia",
+                image: "https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&q=80&w=800",
+                desc: "O caso do Herdier perdido e o desafio do líder Cheren.",
                 steps: [
-                    { id: "step-3-1", text: "<strong>Capture 1 Lillipup (40%):</strong> Coloque no time. Tem ótimos status iniciais. <strong>NÃO UPE</strong> (Herdier e Stoutland são fáceis de pegar depois)." },
-                    { id: "step-3-2", text: "<strong>Capture 1 Pidove e 1 Sewaddle (Rota 20):</strong> Mande para o PC. (Evoluções aparecem na Rota 6)." },
-                    { id: "step-3-3", text: "Encontre o Herdier perdido no fundo do rancho e enfrente o bandido da Team Plasma." }
+                    { id: "h8", text: "<strong>Floccesy:</strong> Capture UM Lillipup. Deixe no time por seus bons atributos iniciais, mas não upe focado nele (Herdier e Stoutland pegaremos depois)." },
+                    { id: "h9", text: "Encontre o membro da Equipe Plasma nos fundos do rancho e salve o Herdier do fazendeiro." },
+                    { id: "h10", text: "<strong>Ginásio 1 (Aspertia):</strong> Enfrente Cheren (Tipo Normal). Use os Sand Attacks do seu Purrloin no Patrat dele para cegá-lo. Finalize com Tepig. Receba a Basic Badge." }
                 ]
             },
             {
-                area: "Ginásio 1: Aspertia City (Cheren)",
-                image: "https://images.unsplash.com/photo-1576267423445-b2e0074d68a4?auto=format&fit=crop&q=80&w=800", // Escola/Ginásio
-                desc: "Líder Cheren (Tipo Normal). Recompensa: Basic Badge.",
+                area: "Virbank City & Complex",
+                image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800",
+                desc: "A cidade costeira tóxica e o show da líder Roxie.",
                 steps: [
-                    { id: "step-4-1", text: "Abra a luta usando seu Purrloin. Use <strong>Sand Attack 3x</strong> no Patrat do Cheren para cegá-lo." },
-                    { id: "step-4-2", text: "Troque para Tepig ou Lillipup para finalizar a luta em segurança, evitando o combo de Work Up do líder." }
+                    { id: "h11", text: "A Grama que Balança (Rustling Grass) está liberada. Ande fora do mato até ele balançar e capture UM <strong>Audino</strong>." },
+                    { id: "h12", text: "<strong>Complexo:</strong> Capture UM Venipede (Mande pro PC, evoluções achamos depois). E se quiser, um Magnemite (não conta pra Dex Gen 5, mas é imune a Veneno)." },
+                    { id: "h13", text: "Upe seu Tepig até o Nível 17 matando Audinos para ele evoluir para Pignite e ganhar tipo Lutador." },
+                    { id: "h14", text: "<strong>Ginásio 2 (Virbank):</strong> Enfrente Roxie (Veneno). Pignite com ataques de Fogo varre o time dela facilmente. Receba a Toxic Badge." },
+                    { id: "h15", text: "Vá ao Pokéstar Studios (obrigatório) e grave seu primeiro filme para desbloquear o barco do pai da Roxie." }
                 ]
             },
             {
-                area: "Virbank City & Complexo",
-                image: "https://images.unsplash.com/photo-1470229722913-7c092db658cb?auto=format&fit=crop&q=80&w=800", // Industrial / Neon
-                desc: "O Polo Industrial de Unova. Libera a grama que balança (Rustling Grass).",
+                area: "Castelia City & Sewers (Esgotos)",
+                image: "https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&q=80&w=800",
+                desc: "A metrópole de Unova. Capturas cruciais acontecem aqui.",
                 steps: [
-                    { id: "step-5-1", text: "<strong>Capture 1 Venipede (20% no Complexo):</strong> PC. <strong>NÃO UPE</strong> (Whirlipede e Scolipede aparecem em florestas)." },
-                    { id: "step-5-2", text: "<strong>FARM DE XP (Importante):</strong> Ande fora da grama até um mato balançar. <strong>Capture 1 Audino (100%)</strong>. Continue matando Audinos para upar seu Tepig até o Nível 17 (evolui para Pignite)." }
+                    { id: "h16", text: "Nos esgotos, ande com Hugh. Cada batalha selvagem será em dupla e ele curará seus Pokémon após a luta (Ótimo pra farmar XP livre)." },
+                    { id: "h17", text: "<strong>Esgotos:</strong> Capture UM Scraggy. Coloque no Slot de Up (Time Principal), ele evolui tarde (Nível 39) e tem tipagem incrível (Lutador/Sombrio)." },
+                    { id: "h18", text: "<strong>Parque Isolado (Via Esgoto):</strong> Capture <strong>DOIS Petilil</strong>. Um vai para o PC, o outro fica na bolsa para uma troca iminente." },
+                    { id: "h19", text: "<strong>Ginásio 3 (Castelia):</strong> Enfrente Burgh (Inseto). Seu Pignite queima Leavanny e Swadloon. O Dwebble toma dano neutro, use golpes lutadores. Receba a Insect Badge." }
                 ]
             },
             {
-                area: "Ginásio 2: Virbank City (Roxie)",
-                image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800", // Rock Club
-                desc: "Líder Roxie (Tipo Venenoso). Clube de Rock Subterrâneo.",
+                area: "A Anomalia da Rota 4 e Deserto",
+                image: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?auto=format&fit=crop&q=80&w=800",
+                desc: "O contorno da exclusividade de Black 2 e capturas do deserto.",
                 steps: [
-                    { id: "step-6-1", text: "Seu Pignite destrói esse ginásio. Use ataques de fogo no Whirlipede (que é Inseto/Veneno) para dano super efetivo." },
-                    { id: "step-6-2", text: "Cuidado para não usar Pokémon de Planta aqui. Ganhe a Toxic Badge." }
+                    { id: "h20", text: "<strong>Troca Vital:</strong> Em um dos prédios da Rota 4, troque um dos Petilil com o NPC para ganhar um <strong>Cottonee (Fluffee)</strong>. Ele vem com Power Weight! Guarde no PC." },
+                    { id: "h21", text: "<strong>Rota 4 / Deserto:</strong> Capture UM Sandile. Coloque direto no time, a imunidade elétrica dele vencerá o próximo ginásio." },
+                    { id: "h22", text: "Capture também: Darumaka, Trubbish, Yamask, Maractus, Dwebble e Sigilyph (Mande todos pro PC, evoluiremos via exp share ou pegamos evolução depois)." }
                 ]
             },
             {
-                area: "Castelia City & Esgotos",
-                image: "https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&q=80&w=800", // Metropole
-                desc: "A grande metrópole. Acesso aos esgotos.",
+                area: "Nimbasa City (Ginásio 4)",
+                image: "https://images.unsplash.com/photo-1550079027-e4c19451634b?auto=format&fit=crop&q=80&w=800",
+                desc: "A passarela brilhante de Elesa.",
                 steps: [
-                    { id: "step-7-1", text: "<strong>Capture 1 Scraggy (Esgotos):</strong> Excelente Pokémon. Fica no time (evolui para Scrafty no Nível 39)." },
-                    { id: "step-7-2", text: "<strong>Capture 2 Petilil (Parque Isolado):</strong> Vá pelos esgotos até o parque. Guarde um no PC e mantenha o outro na bolsa (usaremos para troca logo)." }
-                ]
-            },
-            {
-                area: "Ginásio 3: Castelia City (Burgh)",
-                image: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=800", // Casulos/Natureza
-                desc: "Líder Burgh (Tipo Inseto). Casulos de Seda.",
-                steps: [
-                    { id: "step-8-1", text: "Pignite brilha novamente. Ataques de fogo derretem Leavanny e Swadloon." },
-                    { id: "step-8-2", text: "Para o Dwebble (Inseto/Pedra), ataques de fogo são neutros. Use o golpe lutador <strong>Arm Thrust</strong> para finalizá-lo." }
-                ]
-            },
-            {
-                area: "A Anomalia da Rota 4",
-                image: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?auto=format&fit=crop&q=80&w=800", // Deserto
-                desc: "Área de areia. Como pegar o exclusivo de Black 2.",
-                steps: [
-                    { id: "step-9-1", text: "<strong>TROCA VITAL:</strong> Entre num dos prédios e ache 'Youngster Cotton'. Troque um dos seus Petilil pelo <strong>Cottonee (Fluffee)</strong> dele. Isso garante a entrada na Dex." },
-                    { id: "step-9-2", text: "<strong>Capture 1 Sandile e 1 Darumaka:</strong> Sandile vai pro <strong>TIME</strong> (Imunidade pro próximo ginásio). Darumaka vai pro PC." }
-                ]
-            },
-            {
-                area: "Ginásio 4: Nimbasa City (Elesa)",
-                image: "https://images.unsplash.com/photo-1550079027-e4c19451634b?auto=format&fit=crop&q=80&w=800", // Passarela / Eletrico
-                desc: "Líder Elesa (Tipo Elétrico). A Passarela.",
-                steps: [
-                    { id: "step-10-1", text: "<strong>Estratégia:</strong> Elesa usa Volt Switch para fugir. Seu Sandile (agora Krokorok) é IMUNE a ataques elétricos." },
-                    { id: "step-10-2", text: "Ensine o TM Dig (cavar) para Krokorok e vença a luta facilmente. Receba a Bolt Badge." }
+                    { id: "h23", text: "Batalhe nos Estádios (Small Court / Big Stadium) para farmar muito XP diário para seu Sandile (deve evoluir pra Krokorok no 29) e Pignite." },
+                    { id: "h24", text: "Pegue o TM Dig (Cavar) na Rota 4 e ensine para o Krokorok." },
+                    { id: "h25", text: "<strong>Ginásio 4 (Nimbasa):</strong> Elesa usa Emolga e Zebstrika com Volt Switch. Seu Krokorok é imune a choques. Use Dig e destrua-a. Receba a Bolt Badge." }
                 ]
             }
         ];
 
-        // --- BANCO DE DADOS: POKÉDEX GEN 5 ---
-        // Apenas Pokémon #494 a #649
-        const dexNames = [
-// <!-- ... existing code ... -->
+        // Gerando o array completo dinamicamente para evitar poluir visualmente e economizar limites
+        const gen5Names = [
+            "Victini", "Snivy", "Servine", "Serperior", "Tepig", "Pignite", "Emboar", "Oshawott", "Dewott", "Samurott",
+            "Patrat", "Watchog", "Lillipup", "Herdier", "Stoutland", "Purrloin", "Liepard", "Pansage", "Simisage",
+            "Pansear", "Simisear", "Panpour", "Simipour", "Munna", "Musharna", "Pidove", "Tranquill", "Unfezant",
+            "Blitzle", "Zebstrika", "Roggenrola", "Boldore", "Gigalith", "Woobat", "Swoobat", "Drilbur", "Excadrill",
+            "Audino", "Timburr", "Gurdurr", "Conkeldurr", "Tympole", "Palpitoad", "Seismitoad", "Throh", "Sawk",
+            "Sewaddle", "Swadloon", "Leavanny", "Venipede", "Whirlipede", "Scolipede", "Cottonee", "Whimsicott",
+            "Petilil", "Lilligant", "Basculin", "Sandile", "Krokorok", "Krookodile", "Darumaka", "Darmanitan",
+            "Maractus", "Dwebble", "Crustle", "Scraggy", "Scrafty", "Sigilyph", "Yamask", "Cofagrigus", "Tirtouga",
+            "Carracosta", "Archen", "Archeops", "Trubbish", "Garbodor", "Zorua", "Zoroark", "Minccino", "Cinccino",
+            "Gothita", "Gothorita", "Gothitelle", "Solosis", "Duosion", "Reuniclus", "Ducklett", "Swanna",
+            "Vanillite", "Vanillish", "Vanilluxe", "Deerling", "Sawsbuck", "Emolga", "Karrablast", "Escavalier",
+            "Foongus", "Amoonguss", "Frillish", "Jellicent", "Alomomola", "Joltik", "Galvantula", "Ferroseed",
+            "Ferrothorn", "Klink", "Klang", "Klinklang", "Tynamo", "Eelektrik", "Eelektross", "Elgyem", "Beheeyem",
+            "Litwick", "Lampent", "Chandelure", "Axew", "Fraxure", "Haxorus", "Cubchoo", "Beartic", "Cryogonal",
+            "Shelmet", "Accelgor", "Stunfisk", "Mienfoo", "Mienshao", "Druddigon", "Golett", "Golurk", "Pawniard",
+            "Bisharp", "Bouffalant", "Rufflet", "Braviary", "Vullaby", "Mandibuzz", "Heatmor", "Durant", "Deino",
+            "Zweilous", "Hydreigon", "Larvesta", "Volcarona", "Cobalion", "Terrakion", "Virizion", "Tornadus",
+            "Thundurus", "Reshiram", "Zekrom", "Landorus", "Kyurem", "Keldeo", "Meloetta", "Genesect"
+        ];
+
+        // Mapeia os nomes em objetos com ID começando do 494
+        const dexData = gen5Names.map((name, index) => {
+            return { id: 494 + index, name: name };
+        });
+
+        let historyState = JSON.parse(localStorage.getItem('w2_history')) || {};
+        let dexState = JSON.parse(localStorage.getItem('w2_dex')) || {};
+        let resetClicks = 0;
+
+        window.onload = function() {
+            renderHistory();
+            renderDex();
+            updateProgress();
+        };
+
+        function renderHistory() {
+            const container = document.getElementById('history-content');
+            container.innerHTML = '';
+
+            historyData.forEach((section) => {
+                const secDiv = document.createElement('div');
+                secDiv.className = 'bg-slate-900 rounded-xl overflow-hidden border border-slate-800 shadow-lg';
+                
+                // Cabeçalho da Seção com Imagem
+                const header = document.createElement('div');
+                header.className = 'h-32 bg-cover bg-center relative';
+                header.style.backgroundImage = `url('${section.image}')`;
+                header.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
+                    <div class="absolute bottom-4 left-6 right-6">
+                        <h3 class="text-xl font-bold text-white drop-shadow-md">${section.area}</h3>
+                        <p class="text-xs text-slate-300 drop-shadow">${section.desc}</p>
+                    </div>
+                `;
+                
+                const stepsContainer = document.createElement('div');
+                stepsContainer.className = 'p-6 space-y-4';
+
+                section.steps.forEach(step => {
+                    const isChecked = historyState[step.id] ? 'checked' : '';
+                    const textClass = historyState[step.id] ? 'text-slate-500 line-through' : 'text-slate-200';
+                    
+                    const stepDiv = document.createElement('label');
+                    stepDiv.className = 'flex items-start gap-4 cursor-pointer group';
+                    stepDiv.innerHTML = `
+                        <input type="checkbox" class="custom-checkbox mt-0.5" ${isChecked} onchange="toggleHistory('${step.id}')">
+                        <span class="text-sm leading-relaxed transition-colors duration-200 ${textClass}">${step.text}</span>
+                    `;
+                    stepsContainer.appendChild(stepDiv);
+                });
+
+                secDiv.appendChild(header);
+                secDiv.appendChild(stepsContainer);
+                container.appendChild(secDiv);
+            });
+        }
+
         function renderDex() {
             const container = document.getElementById('dex-grid');
             container.innerHTML = '';
             
-            let caughtCount = 0;
-            let pcCount = 0;
-
             dexData.forEach(pokemon => {
-                const state = dexState[pokemon.id];
+                const state = dexState[pokemon.id] || 0;
                 let bgClass = 'status-uncaught text-slate-500';
                 let iconClass = 'opacity-30 grayscale contrast-75 brightness-50';
                 
                 if(state === 1) { 
                     bgClass = 'status-caught text-emerald-100'; 
                     iconClass = 'opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]';
-                    caughtCount++;
                 }
                 else if(state === 2) { 
                     bgClass = 'status-pc text-blue-50 font-medium'; 
                     iconClass = 'opacity-100 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]';
-                    pcCount++;
-                    caughtCount++;
                 }
 
-                // URL ATUALIZADA: Puxando da base de dados do Pokémon DB (Sprites originais do jogo Black/White) garantidos de carregar.
+                // Sprite oficial do jogo
                 let safeName = pokemon.name.toLowerCase();
                 const spriteUrl = `https://img.pokemondb.net/sprites/black-white/normal/${safeName}.png`;
 
@@ -267,10 +312,111 @@
                 div.innerHTML = `
                     <div class="text-[10px] font-mono tracking-wider opacity-60 mb-1">#${pokemon.id}</div>
                     <div class="relative w-14 h-14 flex items-center justify-center mb-1">
-                        <img src="${spriteUrl}" class="max-w-full max-h-full object-contain ${iconClass}" alt="${pokemon.name}" loading="lazy" onerror="this.src='https://placehold.co/56x56/1e293b/475569?text=?'">
+                        <img src="${spriteUrl}" class="max-w-full max-h-full object-contain ${iconClass}" alt="${pokemon.name}" loading="lazy" onerror="this.style.display='none'">
                     </div>
                     <div class="text-xs tracking-tight truncate w-full">${pokemon.name}</div>
                 `;
                 container.appendChild(div);
             });
-// <!-- ... existing code ... -->
+        }
+
+        function toggleHistory(id) {
+            historyState[id] = !historyState[id];
+            localStorage.setItem('w2_history', JSON.stringify(historyState));
+            renderHistory();
+            updateProgress();
+        }
+
+        function toggleDex(id) {
+            // Ciclo: 0 (Falta) -> 1 (Time) -> 2 (PC) -> 0
+            const current = dexState[id] || 0;
+            dexState[id] = current === 2 ? 0 : current + 1;
+            localStorage.setItem('w2_dex', JSON.stringify(dexState));
+            renderDex();
+            updateProgress();
+        }
+
+        function updateProgress() {
+            // Dex Progress (Apenas Status 2 conta como "Finalizado" para a Living Dex)
+            let dexFinished = 0;
+            const totalDex = dexData.length;
+            
+            Object.values(dexState).forEach(val => {
+                if(val === 2) dexFinished++;
+            });
+            
+            const dexPct = totalDex > 0 ? Math.round((dexFinished / totalDex) * 100) : 0;
+            document.getElementById('dex-pct-text').innerText = `${dexFinished}/${totalDex} (${dexPct}%)`;
+            document.getElementById('dex-progress-bar').style.width = `${dexPct}%`;
+
+            // History Progress
+            let histChecked = 0;
+            let histTotal = 0;
+            historyData.forEach(sec => {
+                sec.steps.forEach(step => {
+                    histTotal++;
+                    if(historyState[step.id]) histChecked++;
+                });
+            });
+            const histPct = histTotal > 0 ? Math.round((histChecked / histTotal) * 100) : 0;
+            document.getElementById('hist-pct-text').innerText = `${histPct}%`;
+        }
+
+        function switchTab(tab) {
+            const btnHist = document.getElementById('btn-history');
+            const btnDex = document.getElementById('btn-dex');
+            const tabHist = document.getElementById('tab-history');
+            const tabDex = document.getElementById('tab-dex');
+
+            if(tab === 'history') {
+                tabHist.classList.remove('hidden');
+                tabDex.classList.add('hidden');
+                btnHist.classList.replace('bg-transparent', 'bg-slate-800');
+                btnHist.classList.replace('text-slate-400', 'text-white');
+                btnDex.classList.replace('bg-slate-800', 'bg-transparent');
+                btnDex.classList.replace('text-white', 'text-slate-400');
+            } else {
+                tabDex.classList.remove('hidden');
+                tabHist.classList.add('hidden');
+                btnDex.classList.replace('bg-transparent', 'bg-slate-800');
+                btnDex.classList.replace('text-slate-400', 'text-white');
+                btnHist.classList.replace('bg-slate-800', 'bg-transparent');
+                btnHist.classList.replace('text-white', 'text-slate-400');
+            }
+        }
+
+        function handleReset() {
+            const btn = document.getElementById('btn-reset');
+            if (resetClicks === 0) {
+                btn.innerText = "Tem certeza? Clique de novo.";
+                btn.classList.replace('bg-red-900/10', 'bg-red-600');
+                btn.classList.replace('text-red-400', 'text-white');
+                resetClicks = 1;
+                
+                setTimeout(() => {
+                    btn.innerText = "Zerar Progresso";
+                    btn.classList.replace('bg-red-600', 'bg-red-900/10');
+                    btn.classList.replace('text-white', 'text-red-400');
+                    resetClicks = 0;
+                }, 3000);
+            } else {
+                localStorage.removeItem('w2_history');
+                localStorage.removeItem('w2_dex');
+                historyState = {};
+                dexState = {};
+                renderHistory();
+                renderDex();
+                updateProgress();
+                
+                btn.innerText = "Resetado!";
+                setTimeout(() => {
+                    btn.innerText = "Zerar Progresso";
+                    btn.classList.replace('bg-red-600', 'bg-red-900/10');
+                    btn.classList.replace('text-white', 'text-red-400');
+                    resetClicks = 0;
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
